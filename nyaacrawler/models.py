@@ -8,11 +8,11 @@ import os
 # Create your models here.
 
 class Anime(models.Model):
-    UNKNOWN_ANIME = 'unknown-anime-placeholder'
-
     """
     The official anime 'entity'
     """
+    UNKNOWN_ANIME = 'unknown-anime-placeholder'
+
     official_title = models.CharField(max_length=200)
     image = models.URLField(blank=True)
 
@@ -33,6 +33,11 @@ class Anime(models.Model):
                 max_episode=Max('episode')
             )['max_episode']
         return 0 if episode is None else episode
+
+    @classmethod
+    def get_unknown_placeholder(cls):
+        unknown_placeholder = cls.objects.get(official_title=Anime.UNKNOWN_ANIME)
+        return unknown_placeholder
 
 
 class AnimeAlias(models.Model):
