@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Anitor Test</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Loading Bootstrap -->
+    <link href="bootstrap/css/bootstrap.css" rel="stylesheet">
+
+    <!-- Loading Flat UI -->
+	<link href="css/flat-ui.css" rel="stylesheet">
+
+    <link rel="shortcut icon" href="images/favicon.ico">
+	
+	<link href="custom-scrollbar-plugin/jquery.mCustomScrollbar.css" rel="stylesheet" type="text/css" />
+	
+	<link href="css/test1.css" rel="stylesheet">
+	
+	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+	<script src="custom-scrollbar-plugin/jquery.mCustomScrollbar.concat.min.js"></script>
+	<script>
+    (function($){
+        $(window).load(function(){
+            $(".table-data").mCustomScrollbar({
+				scrollButtons:{
+						enable:true
+					},
+				autoHideScrollbar:true,
+				theme:"dark-thick",
+			});
+        });
+    })(jQuery);
+	</script>
+
+  </head>
+  <body>
+	<div class="sub-wrapper">
+		<div class="element-border">
+			<div class="image">
+				<img src="shigeki.jpg"/>
+			</div>
+			<div class="data-container">
+				<div class="anime-title">
+					<h3>The World only God Knows</h3>
+				</div>
+				<div class="ep-navigation">
+				<ul>
+				  <li class="previous"><a href="#fakelink" class="fui-arrow-left"></a></li>
+					<li class="ep-number">Episode 18</li>
+				  <li class="next"><a href="#fakelink" class="fui-arrow-right"></a></li>
+				</ul>
+				</div>
+				<div class="table-header">
+					<table>
+						<tr align=left>
+							<th class="fansub-head">Fansub Group</th>
+							<th class="quality-head">Quality</th>
+							<th class="size-head">Size</th>
+							<th class="seed-head">Seed</th>
+							<th class="leach-head">Leach</th>
+						</tr>
+					</table>
+				</div>
+				<div class="table-data">
+					<table>
+						<tr> 
+							<td class="fansub">Commie</td>
+							<td class="quality">720p</td>
+							<td class="file-size">412.50mb</td>
+							<td class="seed">10</td>
+							<td class="leach">5</td>						
+							<td class="magnet"><a href="#fakelink" class="btn btn-block btn-primary">Magnet</a></td>
+							<td class="torrent"><a href="#fakelink" class="btn btn-block btn-primary">Torrent</a></td>
+						</tr>
+						<tr>
+							<td class="fansub">HorribleSubs</td>
+							<td class="quality">1080p</td>
+							<td class="file-size">4112.50mb</td>
+							<td class="seed">66</td>
+							<td class="leach">17</td>						
+							<td class="magnet"><a href="#fakelink" class="btn btn-block btn-primary">Magnet</a></td>
+							<td class="torrent"><a href="#fakelink" class="btn btn-block btn-primary">Torrent</a></td>
+							
+						</tr>
+						<tr>
+							<td class="fansub">UTW</td>
+							<td class="quality">720p</td>
+							<td class="file-size">42.50mb</td>
+							<td class="seed">65</td>
+							<td class="leach">44</td>						
+							<td class="magnet"><a href="#fakelink" class="btn btn-block btn-primary">Magnet</a></td>
+							<td class="torrent"><a href="#fakelink" class="btn btn-block btn-primary">Torrent</a></td>
+						</tr>
+						<tr>
+							<td class="fansub"></td>
+							<td class="quality">420p</td>
+							<td class="file-size">42.50mb</td>
+							<td class="seed">1</td>
+							<td class="leach">222</td>						
+							<td class="magnet"><a href="#fakelink" class="btn btn-block btn-primary">Magnet</a></td>
+							<td class="torrent"><a href="#fakelink" class="btn btn-block btn-primary">Torrent</a></td>
+						</tr>
+					</table>
+				</div>
+			</div>
+		</div>
+		<a href="#fakelink" class="btn btn-block btn-primary subscribe">Subscribe</a>
+	</div>
+  </body>
