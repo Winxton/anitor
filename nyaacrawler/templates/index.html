@@ -1,0 +1,31 @@
+Anime Listings <br>
+
+{% for anime in animeList %}
+	<b>{{ anime.title }}</b> <br>
+	Current Episode: {{ anime.current_episode.max_episode }}<br/>
+	{% for torrent in anime.latest_episodes %}
+		{{ torrent.fansub }}
+		{{ torrent.episode }}
+		{{ torrent.quality }}
+		<br>
+	{% endfor %}
+	<br>
+{% endfor %}
+
+<!--
+<table>
+<tbody>
+<tr><th>Title</th><th>EP.</th><th>Fansub Group</th><th>Quality</th></tr>
+{% for torrent in torrentList %}
+<tr>
+<td>
+<a href="{{ torrent.url }}">
+{{ torrent.anime.title }}</a></td>
+<td>{{ torrent.episode }}</td>
+<td>{{ torrent.fansub }}</td>
+<td>{{ torrent.quality }}</td>
+</tr>
+{% endfor %}
+</tbody>
+</table>
+-->
