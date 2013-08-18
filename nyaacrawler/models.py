@@ -16,13 +16,13 @@ class Anime(models.Model):
 
 class AnimeAlias(models.Model):
 	anime = models.ForeignKey(Anime, related_name="animeAliases")
-	aliasName = models.CharField(max_length=200)
+	alias_name = models.CharField(max_length=200)
 	def __unicode__(self):
-		return self.aliasName
+		return self.alias_name
 
 class Torrent(models.Model):
 	anime = models.ForeignKey(Anime, related_name='torrents')
-	torrentName = models.CharField(max_length=200)
+	torrent_name = models.CharField(max_length=200)
 	episode = models.FloatField()
 	fansub = models.CharField(max_length=30)
 	quality = models.CharField(max_length=10)
@@ -31,12 +31,12 @@ class Torrent(models.Model):
 	infoHash = models.CharField(max_length=30)
 	vidFormat = models.CharField(max_length=10)
 	def __unicode__(self):
-		return self.torrentName
+		return self.torrent_name
 
 class User(models.Model):
 	email = models.EmailField()
 	created = models.DateTimeField(auto_now_add=True)
-	activationKey = models.CharField(max_length=30)
+	activation_key = models.CharField(max_length=30)
 	def __unicode__(self):
 		return self.email
 
@@ -45,4 +45,4 @@ class Subscription(models.Model):
 	anime = models.ForeignKey(Anime)
 	current_episode = models.FloatField()
 	qualities = models.CharField(max_length=30)
-	subGroups = models.CharField(max_length=80)
+	sub_groups = models.CharField(max_length=80)

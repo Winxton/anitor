@@ -5,7 +5,7 @@ class AnimeAdmin(admin.ModelAdmin):
 	list_display = ('identifier','title')
 
 class AnimeAliasAdmin(admin.ModelAdmin):
-    list_display = ('aliasName', "anime")
+    list_display = ('alias_name', "anime")
 
 class TorrentAdmin(admin.ModelAdmin):
     list_display = ('episode','fansub')

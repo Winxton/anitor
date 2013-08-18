@@ -9,7 +9,7 @@ from urlparse import urljoin
 
 import difflib
 
-def crawlAnime():
+def crawl_anime():
 	#example: [subgroup] anime name - 05 [720p].mkv
 	regex = re.compile('(?:\[(.+?)\])?\s?(.+?)\s?\-.*?0?(\d+)\s?.*?(?:.*?((?:\d+p)|(?:\d+x\d+)).*?)?(?:(?=(mkv|mp4|avi)))')
 	
