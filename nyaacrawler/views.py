@@ -1,8 +1,9 @@
 # Create your views here.
 from django.shortcuts import render
-from nyaacrawler.models import Anime,Torrent
+from django.views.decorators.http import require_http_methods
+from nyaacrawler.models import Anime,Torrent,Subscription
 
-from django.utils import simplejson
+import json
 
 def index(request):
 	anime = Anime.objects.all()
@@ -10,3 +11,14 @@ def index(request):
 
 	context = {'animeList': anime, "torrentList":torrent}
 	return render(request, 'index.html', context)
+
+@require_http_methods(["POST"])
+def save_subscription(request):
+    results = {'success':False}
+    """
+    TODO: pass in subscription parameters,
+    create parameter object
+    """
+    json_result = json.dumps(results)
+    return render(json_result, mimetype='application/json')
+    

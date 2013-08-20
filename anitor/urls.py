@@ -7,7 +7,7 @@ admin.autodiscover()
 urlpatterns = patterns('',
     # Examples:
     # url(r'^$', 'anitor.views.home', name='home'),
-    url(r'^anitor/', include('nyaacrawler.urls')),
+    url(r'^', include('nyaacrawler.urls')),
 
     # Uncomment the admin/doc line below to enable admin documentation:
     # url(r'^admin/doc/', include('django.contrib.admindocs.urls')),

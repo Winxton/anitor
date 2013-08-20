@@ -1,6 +1,8 @@
 from django.conf.urls import patterns, url
-import nyaacrawler.views
+
+from nyaacrawler.views import index, save_subscription
 
 urlpatterns = patterns('',
-    url(r'^$', nyaacrawler.views.index)
+    url(r'^subscription/$', save_subscription),
+    url(r'^$', index),
 )
