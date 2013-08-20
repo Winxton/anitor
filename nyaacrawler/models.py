@@ -6,21 +6,20 @@ from django.contrib.contenttypes import generic
 # Create your models here.
 
 class Anime(models.Model):
-    identifier = models.IntegerField()
     title = models.CharField(max_length=200)
     def __unicode__(self):
-        return self.title
+    	return self.title
     def latest_episodes(self):
-        return self.torrents.all().filter(episode=self.current_episode()['max_episode'])
+    	return self.torrents.all().filter(episode=self.current_episode()['max_episode'])
     def current_episode(self):
-        #ex: ["max_episode" : num]
-        return self.torrents.aggregate(max_episode=Max('episode'))
+    	#ex: ["max_episode" : num]
+    	return self.torrents.aggregate(max_episode=Max('episode'))
 
 class AnimeAlias(models.Model):
-    anime = models.ForeignKey(Anime)
+    anime = models.ForeignKey(Anime, related_name="animeAliases")
     alias_name = models.CharField(max_length=200)
     def __unicode__(self):
-        return self.alias_name
+    	return self.alias_name
 
 class Torrent(models.Model):
     anime = models.ForeignKey(Anime, related_name='torrents')

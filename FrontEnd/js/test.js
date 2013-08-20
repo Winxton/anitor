@@ -1,4 +1,5 @@
-    (function($){
+
+  (function($){
         $(window).load(function(){
             $(".table-data").mCustomScrollbar({
 				scrollButtons:{
@@ -9,22 +10,25 @@
 			});
         });
     })(jQuery);
+	$(document).ready(function(){
+	$('.fancybox').fancybox();
 	
-	$(document).ready(function() {
-			$('.fancybox').fancybox();
-			$('.theworldonlygodknows .fansub').each(function()
-			{
-				var temp=$(this).html();
-				if(temp){
-				//Create the label element
-				var label = $('<label class="checkbox" for="checkbox1">').text($(this).html());
-				//Create the input element
-				var input = $('<input type="checkbox" value="" id="checkbox1" data-toggle="checkbox">').attr({});
-
-				//Insert the input into the label
-				input.appendTo(label);
-				//Insert the label into the DOM - replace body with the required position
-				$('.fansub-list').append(label);
-				}
-			});
-		})(jQuery);
+	$('.subscribe').click(function() {
+		var animename = $(this).parent('div').attr('id');
+		$('#fansub-list').empty();
+		$("#"+animename+ " .fansub").each(function(){
+		if($(this).text()){
+		//Create the label element
+		var label = $('<label class="checkbox" for="checkbox1">').text($(this).text());
+		//Create the input element
+		var input = $('<input type="checkbox" id="checkbox1" data-toggle="checkbox"><span class="icons"><span class="first-icon fui-checkbox-unchecked"></span><span class="second-icon fui-checkbox-checked"></span></span>').attr({});
+		//Insert the input into the label
+		input.appendTo(label);
+		//Insert the label into the DOM - replace body with the required position
+		$('#fansub-list').append(label);
+		}
+		});
+	});
+	});
+	
+	

@@ -1,14 +1,10 @@
 from nyaacrawler.models import Anime, Torrent
 from nyaacrawler.utils import emailSender
 
+from bs4 import BeautifulSoup
+
 import urllib2
 import re
-import sys
-
-from bs4 import BeautifulSoup
-from urlparse import urljoin
-
-import difflib
 
 def torrent_arrived(torrent):
     """
@@ -30,11 +26,26 @@ def crawl_anime():
     run as a django-admin command
     """
 
-    #example: [subgroup] anime name - 05 [720p].mkv
-    regex = re.compile('(?:\[(.+?)\])?\s?(.+?)\s?\-.*?0?(\d+)\s?.*?(?:.*?((?:\d+p)|(?:\d+x\d+)).*?)?(?:(?=(mkv|mp4|avi)))')
+    #example: [fansub group] anime name - 05 [720p].mkv
+
+    rStr = ''
+    # fansub group
+    rStr += '(?:\[(.+?)\])?'
+    # title
+    rStr += '\s(.+?)\s'
+    # title/episode separator (assumes that everything is in English)
+    rStr += '\-(?=[^A-Za-z]{2}).*?'
+    # episode #
+    rStr += '0?(\d+).*?'
+    # quality
+    rStr += '(?:.*?((?:\d+(?:p|P))|(?:\d+x\d+)).*?)?'
+    # format
+    rStr += '(?=(mkv|mp4|avi))'
+
+    regex = re.compile(rStr)
 
     #url to crawl
-    c=urllib2.urlopen('http://www.nyaa.eu/?cats=1_37&term=shingeki+no+kyojin')
+    c=urllib2.urlopen('http://www.nyaa.se/?cats=1_37')
 
     soup=BeautifulSoup(c.read())
     result = soup.find_all('td', {"class" : "tlistname"})
@@ -79,7 +90,7 @@ def crawl_anime():
 
     			#print (animeObj.title)
     			url = item.find("a")['href']
-    			print url
+    			print "Item found: ", url
     			
                 #create if does not exist
     			torrentObj, created = Torrent.objects.get_or_create(
@@ -94,8 +105,5 @@ def crawl_anime():
                 torrent_arrived(torrentObj)
     	except:
     		pass
-    		e = sys.exc_info()
-    		print e
-
     		#print('error deteccted')
     		#print(item.get_text())
