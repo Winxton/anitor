@@ -1,7 +1,7 @@
 anitor
 ======
 
-Anime Torrent organizor and aggregator. 
+Anime Torrent organizer and aggregator. 
 
 Required Modules:
 

@@ -4,7 +4,6 @@ from django.db.models.aggregates import Max
 # Create your models here.
 
 class Anime(models.Model):
-	identifier = models.IntegerField()
 	title = models.CharField(max_length=200)
 	def __unicode__(self):
 		return self.title
