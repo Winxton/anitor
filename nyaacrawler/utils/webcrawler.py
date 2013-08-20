@@ -1,89 +1,60 @@
 from nyaacrawler.models import Anime, Torrent
-
+from bs4 import BeautifulSoup
 import urllib2
 import re
-import sys
-
-from bs4 import BeautifulSoup
-from urlparse import urljoin
-
-import difflib
 
 def crawl_anime():
-	#example: [subgroup] anime name - 05 [720p].mkv
-	regex = re.compile('(?:\[(.+?)\])?\s?(.+?)\s?\-.*?0?(\d+)\s?.*?(?:.*?((?:\d+p)|(?:\d+x\d+)).*?)?(?:(?=(mkv|mp4|avi)))')
-	
+    #example: [fansub group] anime name - 05 [720p].mkv
+
+    rStr = ''
+    # fansub group
+    rStr += '(?:\[(.+?)\])?'
+    # title
+    rStr += '\s(.+?)\s'
+    # title/episode separator (assumes that everything is in English)
+    rStr += '\-(?=[^A-Za-z]{2}).*?'
+    # episode #
+    rStr += '0?(\d+).*?'
+    # quality
+    rStr += '(?:.*?((?:\d+(?:p|P))|(?:\d+x\d+)).*?)?'
+    # format
+    rStr += '(?=(mkv|mp4|avi))'
+
+    regex = re.compile(rStr)
+
     #url to crawl
-	c=urllib2.urlopen('http://www.nyaa.eu/?cats=1_37&term=shingeki+no+kyojin')
-    
-	soup=BeautifulSoup(c.read())
-	result = soup.find_all('td', {"class" : "tlistname"})
-	
-	uniqueAnime = []
+    c=urllib2.urlopen('http://www.nyaa.se/?cats=1_37')
 
-	for item in result:
-		#print (item.get_text())
-	
-		try:
-			#extract torrent info
-			res = regex.match(item.get_text().replace('_', ' '))
+    soup=BeautifulSoup(c.read())
+    result = soup.find_all('td', {"class" : "tlistname"})
 
-			fullStr = res.group(0)
-			fansub = res.group(1)
-			animeName = res.group(2)
+    for item in result:
+        try:
+            url = item.find("a")['href']
+            
+            # extract data after some normalization
+            res = regex.match(item.get_text().replace('_', ' '))
 
-			#print('Anime: ' + animeName)
-			if animeName not in uniqueAnime:
-				uniqueAnime.append(animeName)
+            fansub = res.group(1)
+            animeName = res.group(2)
+            episode = res.group(3)
+            quality = format(res.group(4))
+            vidFormat = format(res.group(5))
 
-			episode = res.group(3)
-			vidFormat = format(res.group(5))
-			quality = format(res.group(4))
+            if Anime.objects.filter(title=animeName).count():
+                animeObj = Anime.objects.get(title=animeName)
 
-			#None handling
-			if fansub is None:
-				print ("????????? fansub")
-				fansub = "?"
-			if vidFormat is None:
-				print ("????????? vidformat")
-				vidFormat = "?"
-			if quality is None:
-				print ("????????? quality")
-				quality = "?"
+                #create if does not exist
+                torrentObj, created = Torrent.objects.get_or_create(
+                    anime = animeObj,
+                    episode = episode,
+                    fansub = fansub,
+                    quality = quality,
+                    url = url,						
+                    vidFormat = vidFormat,
+                )
 
-			num_results = Anime.objects.filter(title=animeName).count()
+        except:
+            pass
 
-			if num_results == 1:
-				#print "anime match"
-				animeObj = Anime.objects.get(title=animeName)
-
-				#print (animeObj.title)
-				url = item.find("a")['href']
-				print url
-				
-	            #create if does not exist
-				torrentObj, created = Torrent.objects.get_or_create(
-					anime = animeObj,
-					episode = episode,
-					fansub = fansub,
-					quality = quality,
-					url = url,						
-					vidFormat = vidFormat,
-				)
-				"""
-				print (torrentObj.anime.title, torrentObj.episode, torrentObj.fansub, torrentObj.quality, 								torrentObj.format, torrentObj.url)
-               	"""
-		except:
-			pass
-			e = sys.exc_info()
-			print e
-
-			#print('error deteccted')
-			#print(item.get_text())
-
-	for anime in uniqueAnime:
-		print anime
-
-
-
-
+    print ("k")
