@@ -176,3 +176,16 @@ body{
 	width:400px;
 	display:none;
 }
+
+#fansub-wrapper{
+	position:inline-block;
+	width:30%;
+	float:left;
+}
+
+#quality-wrapper{
+	position:inline-block;
+	width:30%;
+	float:left;
+	padding-left:40px;
+}
