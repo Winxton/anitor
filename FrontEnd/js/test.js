@@ -31,7 +31,6 @@
 		}
 		});	
 		fansubcnt=numfansub;
-		qualitycnt=numquality;
 		$('#quality-list').empty();
 		$("#"+animename+ " .quality").each(function(){
 		if($(this).text()){
@@ -42,6 +41,7 @@
 			numquality+=1;
 		}
 		});
+		qualitycnt=numquality;
 		$(".checkbox-fansub").click(function(){
 			if($(this).hasClass("checked"))
 			fansubcnt-=1;
