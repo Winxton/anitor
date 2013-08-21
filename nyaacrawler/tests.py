@@ -7,10 +7,27 @@ Replace this with more appropriate tests for your application.
 
 from django.test import TestCase
 
+from nyaacrawler.models import Anime,Torrent, Subscription
 
-class SimpleTest(TestCase):
-    def test_basic_addition(self):
-        """
-        Tests that 1 + 1 always equals 2.
-        """
-        self.assertEqual(1 + 1, 2)
+class nyaaView(TestCase):
+    
+    def test_index(self):
+
+        anime_1 = Anime.objects.create(
+            title = "evangelion"
+        )
+
+        anime_2 = Anime.objects.create(
+            title = "Angel Beats"
+        )
+        
+        resp = self.client.get('/')
+        
+        self.assertEqual(resp.status_code, 200)
+        self.assertTrue('animeList' in resp.context)
+        self.assertEqual([anime.pk for anime in resp.context['animeList']], [1,2])
+        
+    def test_subscription(self):
+        resp = self.client.post('/subscription/')
+        self.assertEqual(resp.status_code, 200)
+        

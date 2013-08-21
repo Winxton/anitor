@@ -2,6 +2,7 @@
 from django.shortcuts import render
 from django.views.decorators.http import require_http_methods
 from nyaacrawler.models import Anime,Torrent,Subscription
+from django.http import HttpResponse
 
 import json
 
@@ -20,5 +21,4 @@ def save_subscription(request):
     create parameter object
     """
     json_result = json.dumps(results)
-    return render(json_result, mimetype='application/json')
-    
+    return HttpResponse(json_result, content_type='application/json')
