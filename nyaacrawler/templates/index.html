@@ -1,31 +1,63 @@
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.2/jquery.min.js"></script>
+
+<input type="text" id="anime_search"/>
+<br/><br/>
+
 Anime Listings <br>
-
+<div id = "anime_listings">
 {% for anime in animeList %}
-	<b>{{ anime.title }}</b> <br>
-	Current Episode: {{ anime.current_episode.max_episode }}<br/>
-	{% for torrent in anime.latest_episodes %}
-		{{ torrent.fansub }}
-		{{ torrent.episode }}
-		{{ torrent.quality }}
-		<br>
-	{% endfor %}
-	<br>
+    <b>{{ anime.title }}</b> <br>
+    Current Episode: {{ anime.current_episode.max_episode }}<br/>
+    {% for torrent in anime.latest_episodes %}
+        {{ torrent.fansub }}
+        {{ torrent.episode }}
+        {{ torrent.quality }}
+        <br>
+    {% endfor %}
+    <br>
 {% endfor %}
+</div>
 
-<!--
-<table>
-<tbody>
-<tr><th>Title</th><th>EP.</th><th>Fansub Group</th><th>Quality</th></tr>
-{% for torrent in torrentList %}
-<tr>
-<td>
-<a href="{{ torrent.url }}">
-{{ torrent.anime.title }}</a></td>
-<td>{{ torrent.episode }}</td>
-<td>{{ torrent.fansub }}</td>
-<td>{{ torrent.quality }}</td>
-</tr>
-{% endfor %}
-</tbody>
-</table>
--->
+<script>
+
+function boldSelected(str, s, e) {
+    return str.substring(0, s) + "<b>" + str.substring(s,e) + "</b>" + str.substring(e);
+}
+
+//var searchURL = "/get-anime-list/";
+$('#anime_search').keyup(function() {
+    searchTerm = this.value.toLowerCase();
+    
+    $.get(
+        "{% url 'animeList' %}", 
+        {search:searchTerm},
+        function(response) {
+            $("#anime_listings").empty();
+            $.each
+            (
+                response,
+                function(ani_key, ani_value) {
+                    var startIdx = ani_value['title'].toLowerCase().indexOf(searchTerm);
+                    var endIdx = startIdx + searchTerm.length;
+                    var html = "<br/>"+ani_key +" "+ boldSelected(ani_value['title'], startIdx, endIdx);
+                    
+                    var torrents = ani_value['torrents'];
+
+                    $.each(
+                        torrents,
+                        function(tor_key, tor_val) {
+                            html += "<br/>";
+                            html += (tor_val['fansub']);
+                            html += (tor_val['quality']);
+                        }
+                    );
+                    
+                    $("#anime_listings").append(html);
+                }
+            );
+        },
+        "json"
+    );
+
+});
+</script>
