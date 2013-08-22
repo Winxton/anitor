@@ -104,9 +104,11 @@
 				</div>
 			</div>
 		</div>
+		
 		<a href="#inline1" class="btn btn-block btn-primary subscribe fancybox">Subscribe</a>
 	</div>	
 	<div class="sub-wrapper" id="theworldonlygodknows2">
+	
 		<div class="element-border">
 			<div class="image">
 				<img src="shigeki.jpg"/>
@@ -176,28 +178,46 @@
 				</div>
 			</div>
 		</div>
-		<a href="#inline1" class="btn btn-block btn-primary subscribe fancybox">Subscribe</a>
+		<a href="#inline1" class="btn btn-block subscribe fancybox">Subscribe</a>
+		
 	</div>
 	<div id="inline1">
 		<h3>Subscribe</h3>
 		<div id="fansub-wrapper">
-		<h4>Fansub</h4>
-		<label class="checkbox checkbox-all-fansub checked">
-			<input class="checkbox-option-all-fansub" type="checkbox" checked="checked" data-toggle="checkbox">
-			All
-        </label>
-		<div id="fansub-list">
-		</div>
+			<h4>Fansub</h4>
+			<form>
+				<label class="checkbox checkbox-all-fansub checked">
+					<input class="checkbox-option-all-fansub" type="checkbox" checked="checked" data-toggle="checkbox">
+					All
+				</label>
+				<div id="fansub-list">
+				</div>
+			</form>
 		</div>
 		<div id="quality-wrapper">
-		<h4>Quality</h4>
-		<label class="checkbox checkbox-all-quality checked">
-			<input class="checkbox-option-all-quality" type="checkbox" checked="checked" data-toggle="checkbox">
-			Any
-        </label>
-		
-		<div id="quality-list">
+			<h4>Quality</h4>
+			<form>
+				<label class="checkbox checkbox-all-quality checked">
+					<input class="checkbox-option-all-quality" type="checkbox" checked="checked" data-toggle="checkbox">
+					Any
+				</label>
+				<div id="quality-list">
+				</div>
+			</form>
 		</div>
+		<br>
+		<div id="email-wrapper">
+			<form>
+				<h4><b>Email</b> : <input type="text" name="email" id="email-box"/>
+				<input type="submit" value="Subscribe" class="btn btn-block subscribe-final"/></h4>
+			</form>
+		</div>
+		<div id="subscribe-wrapper">
+			
+		</div>
+		<div class="alert alert-error" id="alert-error-private">
+			<button type="button" class="close"></button>
+			<strong>Error! </strong>Please put in your correct email address
 		</div>
     </div> 
 	</div>
