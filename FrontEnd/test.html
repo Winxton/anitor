@@ -84,7 +84,7 @@
 						</tr>
 						<tr>
 							<td class="fansub">UTW</td>
-							<td class="quality">720p</td>
+							<td class="quality">360p</td>
 							<td class="file-size">42.50mb</td>
 							<td class="seed">65</td>
 							<td class="leach">44</td>						
@@ -104,9 +104,11 @@
 				</div>
 			</div>
 		</div>
+		
 		<a href="#inline1" class="btn btn-block btn-primary subscribe fancybox">Subscribe</a>
 	</div>	
 	<div class="sub-wrapper" id="theworldonlygodknows2">
+	
 		<div class="element-border">
 			<div class="image">
 				<img src="shigeki.jpg"/>
@@ -156,7 +158,7 @@
 						</tr>
 						<tr>
 							<td class="fansub">UTW1</td>
-							<td class="quality">720p</td>
+							<td class="quality">360p</td>
 							<td class="file-size">42.50mb</td>
 							<td class="seed">65</td>
 							<td class="leach">44</td>						
@@ -176,16 +178,46 @@
 				</div>
 			</div>
 		</div>
-		<a href="#inline1" class="btn btn-block btn-primary subscribe fancybox">Subscribe</a>
+		<a href="#inline1" class="btn btn-block subscribe fancybox">Subscribe</a>
+		
 	</div>
 	<div id="inline1">
 		<h3>Subscribe</h3>
-		<h4>Fansub</h4>
-		<label class="checkbox" for="checkbox1">
-			<input type="checkbox" id="checkbox1" data-toggle="checkbox">
-			All
-        </label>
-		<div id="fansub-list">
+		<div id="fansub-wrapper">
+			<h4>Fansub</h4>
+			<form>
+				<label class="checkbox checkbox-all-fansub checked">
+					<input class="checkbox-option-all-fansub" type="checkbox" checked="checked" data-toggle="checkbox">
+					All
+				</label>
+				<div id="fansub-list">
+				</div>
+			</form>
+		</div>
+		<div id="quality-wrapper">
+			<h4>Quality</h4>
+			<form>
+				<label class="checkbox checkbox-all-quality checked">
+					<input class="checkbox-option-all-quality" type="checkbox" checked="checked" data-toggle="checkbox">
+					Any
+				</label>
+				<div id="quality-list">
+				</div>
+			</form>
+		</div>
+		<br>
+		<div id="email-wrapper">
+			<form>
+				<h4><b>Email</b> : <input type="text" name="email" id="email-box"/>
+				<input type="submit" value="Subscribe" class="btn btn-block subscribe-final"/></h4>
+			</form>
+		</div>
+		<div id="subscribe-wrapper">
+			
+		</div>
+		<div class="alert alert-error" id="alert-error-private">
+			<button type="button" class="close"></button>
+			<strong>Error! </strong>Please put in your correct email address
 		</div>
     </div> 
 	</div>

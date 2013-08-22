@@ -1,17 +1,17 @@
-from nyaacrawler.models import Anime, Torrent
-from nyaacrawler.utils import emailSender
+from nyaacrawler.models import Anime, Torrent, AnimeAlias
+#from nyaacrawler.utils import emailSender
 
 from bs4 import BeautifulSoup
 
 import urllib2
 import re
+import sys
 
 def torrent_arrived(torrent):
     """
     get all matching subscribers and send notification email
     """
     torrent = Torrent.objects.filter(episode=19).get(pk=5)
-
     matched_subscriptions = torrent.get_matching_subscriptions()
     
     for subscription in matched_subscriptions:
@@ -22,7 +22,7 @@ def torrent_arrived(torrent):
 
 def crawl_anime():
     """
-    an incremental crawl of torrents from nyaa.eu
+    an incremental crawl of torrents from nyaa.se
     run as a django-admin command
     """
 
@@ -50,60 +50,57 @@ def crawl_anime():
     soup=BeautifulSoup(c.read())
     result = soup.find_all('td', {"class" : "tlistname"})
 
-    uniqueAnime = []
-
+    unidentifiedNames = []
+    
     for item in result:
-    	#print (item.get_text())
+        try:
+            url = item.find("a")['href']
+            
+            # extract data after some normalization
+            res = regex.match(item.get_text().replace('_', ' '))
+            
+            if not res:
+                continue
+            
+            fansub = res.group(1)
+            animeName = res.group(2)
+            episode = res.group(3)
+            quality = format(res.group(4))
+            vidFormat = format(res.group(5))
 
-    	try:
-    		#extract torrent info
-    		res = regex.match(item.get_text().replace('_', ' '))
+            animeObj = AnimeAlias.objects.filter(alias_name=animeName)
+            
+            if animeObj.count():
+                animeObj = animeObj[0].anime;
+                
+                if str(animeObj) == "placeholder":
+                    continue
 
-    		fullStr = res.group(0)
-    		fansub = res.group(1)
-    		animeName = res.group(2)
+                torrentObj, created = Torrent.objects.get_or_create(
+                    url = url,
+                    defaults = {
+                        'anime'     :   animeObj,
+                        'episode'   :   episode,
+                        'fansub'    :   fansub,
+                        'quality'   :   quality,       
+                        'vidFormat' :   vidFormat,
+                    }
+                )
+                
+                # torrent_arrived(torrentObj)
 
-    		#print('Anime: ' + animeName)
-    		if animeName not in uniqueAnime:
-    			uniqueAnime.append(animeName)
+            elif animeName not in unidentifiedNames:
+                unidentifiedNames.append(animeName)
 
-    		episode = res.group(3)
-    		vidFormat = format(res.group(5))
-    		quality = format(res.group(4))
-
-    		#None handling
-    		if fansub is None:
-    			print ("????????? fansub")
-    			fansub = "?"
-    		if vidFormat is None:
-    			print ("????????? vidformat")
-    			vidFormat = "?"
-    		if quality is None:
-    			print ("????????? quality")
-    			quality = "?"
-
-    		num_results = Anime.objects.filter(title=animeName).count()
-
-    		if num_results == 1:
-    			#print "anime match"
-    			animeObj = Anime.objects.get(title=animeName)
-
-    			#print (animeObj.title)
-    			url = item.find("a")['href']
-    			print "Item found: ", url
-    			
-                #create if does not exist
-    			torrentObj, created = Torrent.objects.get_or_create(
-    				anime = animeObj,
-    				episode = episode,
-    				fansub = fansub,
-    				quality = quality,
-    				url = url,						
-    				vidFormat = vidFormat,
-    			)
-
-                torrent_arrived(torrentObj)
-    	except:
-    		pass
-    		#print('error deteccted')
-    		#print(item.get_text())
+        except:
+            print('Error at: ' + item.get_text())
+            print('with error: ' + str(sys.exc_info()) + '\n')
+    
+    print ('Crawl completed')
+    if len(unidentifiedNames):
+        for name in sorted(unidentifiedNames):
+            # store these names as alias to anime "placeholder"
+            AnimeAlias.objects.get_or_create(
+                anime = Anime.objects.get(title='placeholder'),
+                alias_name = name
+            )
