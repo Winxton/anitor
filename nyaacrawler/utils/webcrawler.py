@@ -18,7 +18,7 @@ def torrent_arrived(torrent):
         message_parameters = [torrent.episode, unicode(torrent.anime)]
         emailSender.send_notification_email (subscription.get_email(), message_parameters)
         subscription.increment_episode()
-        subscription.save()
+        #subscription.save()
 
 def crawl_anime():
     """
@@ -48,13 +48,20 @@ def crawl_anime():
     c=urllib2.urlopen('http://www.nyaa.se/?cats=1_37')
 
     soup=BeautifulSoup(c.read())
-    result = soup.find_all('td', {"class" : "tlistname"})
-
+    result = soup.find_all('tr', {"class" : "tlistrow"})
+    
     unidentifiedNames = []
     
     for item in result:
         try:
-            url = item.find("a")['href']
+            nametd = item.find('td',{"class":'tlistname'})
+
+            name = nametd.get_text()
+            url = nametd.a['href']
+            torrent_link = item.find('td',{"class":'tlistdownload'}).a['href']
+            size = item.find('td',{'class':'tlistsize'}).get_text()
+            seeders = item.find('td',{'class':'tlistln'}).get_text()
+            leechers = item.find('td',{'class':'tlistdn'}).get_text()
             
             # extract data after some normalization
             res = regex.match(item.get_text().replace('_', ' '))
@@ -67,15 +74,16 @@ def crawl_anime():
             episode = res.group(3)
             quality = format(res.group(4))
             vidFormat = format(res.group(5))
-
-            animeObj = AnimeAlias.objects.filter(alias_name=animeName)
             
-            if animeObj.count():
-                animeObj = animeObj[0].anime;
-                
+            #animeObj = AnimeAlias.objects.filter(alias_name=animeName)
+            animeObjs = Anime.objects.filter(title=animeName)            
+            
+            if animeObjs.count():
+                animeObj = animeObjs[0];
+                """
                 if str(animeObj) == "placeholder":
                     continue
-
+                """
                 torrentObj, created = Torrent.objects.get_or_create(
                     url = url,
                     defaults = {
@@ -86,17 +94,19 @@ def crawl_anime():
                         'vidFormat' :   vidFormat,
                     }
                 )
-                
+                print animeObj, " Torrent created"
                 # torrent_arrived(torrentObj)
 
             elif animeName not in unidentifiedNames:
                 unidentifiedNames.append(animeName)
+            
 
         except:
             print('Error at: ' + item.get_text())
             print('with error: ' + str(sys.exc_info()) + '\n')
     
     print ('Crawl completed')
+    """
     if len(unidentifiedNames):
         for name in sorted(unidentifiedNames):
             # store these names as alias to anime "placeholder"
@@ -104,3 +114,4 @@ def crawl_anime():
                 anime = Anime.objects.get(title='placeholder'),
                 alias_name = name
             )
+    """
