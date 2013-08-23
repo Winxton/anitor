@@ -3,15 +3,23 @@ from nyaacrawler.models import Anime, Torrent, AnimeAlias
 
 from bs4 import BeautifulSoup
 
+from hashlib import sha1
+import bencode
+
+import urllib
 import urllib2
 import re
 import sys
+
+#url parameters - subject to change
+BASE_URL = 'http://www.nyaa.se/'
+ENGLISH_TRANSLATED = '1_37'
+TRUSTED_ONLY = 2
 
 def torrent_arrived(torrent):
     """
     get all matching subscribers and send notification email
     """
-    torrent = Torrent.objects.filter(episode=19).get(pk=5)
     matched_subscriptions = torrent.get_matching_subscriptions()
     
     for subscription in matched_subscriptions:
@@ -22,10 +30,10 @@ def torrent_arrived(torrent):
 
 def crawl_anime():
     """
-    an incremental crawl of torrents from nyaa.se
-    run as a django-admin command
+    Scapes the front page of nyaa:
+    an incremental crawl of torrents from nyaa.se which
+    runs as a django-admin command
     """
-
     #example: [fansub group] anime name - 05 [720p].mkv
 
     rStr = ''
@@ -45,7 +53,16 @@ def crawl_anime():
     regex = re.compile(rStr)
 
     #url to crawl
-    c=urllib2.urlopen('http://www.nyaa.se/?cats=1_37')
+    query_parameters = {
+        'cats' : ENGLISH_TRANSLATED,
+        'filter' : TRUSTED_ONLY
+    }
+
+    url = BASE_URL + '?' + urllib.urlencode(query_parameters)
+
+    print ("Scraping page... " + url)
+    
+    c=urllib2.urlopen(url)
 
     soup=BeautifulSoup(c.read())
     result = soup.find_all('tr', {"class" : "tlistrow"})
@@ -56,44 +73,51 @@ def crawl_anime():
         try:
             nametd = item.find('td',{"class":'tlistname'})
 
-            name = nametd.get_text()
-            url = nametd.a['href']
-            torrent_link = item.find('td',{"class":'tlistdownload'}).a['href']
-            size = item.find('td',{'class':'tlistsize'}).get_text()
-            seeders = item.find('td',{'class':'tlistln'}).get_text()
-            leechers = item.find('td',{'class':'tlistdn'}).get_text()
+            torrent_name = nametd.get_text()
             
             # extract data after some normalization
-            res = regex.match(item.get_text().replace('_', ' '))
+            res = regex.match(torrent_name.replace('_', ' '))
             
             if not res:
                 continue
-            
-            fansub = res.group(1)
+
             animeName = res.group(2)
-            episode = res.group(3)
-            quality = format(res.group(4))
-            vidFormat = format(res.group(5))
 
             animeObj = AnimeAlias.objects.filter(alias_name=animeName)
             
             if animeObj.count():
                 animeObj = animeObj[0].anime;
                 
-                if str(animeObj) == "placeholder":
+                if animeObj.official_title == "unknown-anime-placeholder":
                     continue
 
+                #get torrent info
+                fansub = res.group(1)
+                episode = res.group(3)
+                quality = format(res.group(4))
+                vidFormat = format(res.group(5))
+
+                url = nametd.a['href']
+                torrent_link = item.find('td',{"class":'tlistdownload'}).a['href']
+                size = item.find('td',{'class':'tlistsize'}).get_text()
+                seeders = item.find('td',{'class':'tlistln'}).get_text()
+                leechers = item.find('td',{'class':'tlistdn'}).get_text()
+
+                info_hash = get_torrent_info_hash(torrent_link)
+                
                 torrentObj, created = Torrent.objects.get_or_create(
                     url = url,
                     defaults = {
+                        'torrent_name'  : torrent_name,
                         'anime'     :   animeObj,
                         'episode'   :   episode,
                         'fansub'    :   fansub,
                         'quality'   :   quality,       
                         'vidFormat' :   vidFormat,
+                        'infoHash'  :   info_hash
                     }
                 )
-                
+                print ("torrent for " + str(torrentObj) + " added")
                 # torrent_arrived(torrentObj)
 
             elif animeName not in unidentifiedNames:
@@ -102,13 +126,22 @@ def crawl_anime():
         except:
             print('Error at: ' + item.get_text())
             print('with error: ' + str(sys.exc_info()) + '\n')
-    
+            
     print ('Crawl completed')
     if len(unidentifiedNames):
         for name in sorted(unidentifiedNames):
-            # store these names as alias to anime "placeholder"
+            # store these names as alias to anime "unknown-anime-placeholder"
             AnimeAlias.objects.get_or_create(
-                anime = Anime.objects.get(title='placeholder'),
+                anime = Anime.objects.get(official_title='unknown-anime-placeholder'),
                 alias_name = name
             )
         print ('new anime alias added')
+
+def get_torrent_info_hash(torrent_link):
+    rawdata = urllib2.urlopen(torrent_link).read();
+
+    metainfo = bencode.bdecode(rawdata)
+
+    obj = sha1(bencode.bencode(metainfo['info']) )
+
+    return obj.hexdigest()

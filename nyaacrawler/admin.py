@@ -2,7 +2,7 @@ from django.contrib import admin
 from nyaacrawler import models
 
 class AnimeAdmin(admin.ModelAdmin):
-	list_display = ('title',)
+	list_display = ('official_title',)
 
 class AnimeAliasAdmin(admin.ModelAdmin):
     list_display = ('anime', 'alias_name')

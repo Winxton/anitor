@@ -7,7 +7,8 @@ from django.http import HttpResponse
 import json
 
 def index(request):
-	anime = Anime.objects.all()
+	anime = Anime.objects.all().exclude(official_title="unknown-anime-placeholder")
+
 	torrent = Torrent.objects.all()
 
 	context = {'animeList': anime, "torrentList":torrent}
@@ -23,18 +24,17 @@ def save_subscription(request):
     json_result = json.dumps(results)
     return HttpResponse(json_result, content_type='application/json')
 
-
 def get_anime_list(request):
     search_string = request.GET.get('search')
 
     response = []
     
-    anime_list = Anime.objects.filter(title__icontains=search_string).exclude(id=1)
+    anime_list = Anime.objects.filter(official_title__icontains=search_string).exclude(official_title="unknown-anime-placeholder")
     
     for anime in anime_list:
         animeObj = {}
         animeObj['pk'] = anime.pk
-        animeObj['title'] = anime.title
+        animeObj['title'] = anime.official_title
         animeObj['torrents'] = []
         
         torrent_list = anime.latest_episodes()

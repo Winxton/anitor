@@ -3,7 +3,7 @@
     "model": "nyaacrawler.anime",
     "pk": 1,
     "fields": {
-      "title": "placeholder"
+      "official_title": "unknown-anime-placeholder"
     }
   }
 ]

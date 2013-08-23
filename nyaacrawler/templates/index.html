@@ -10,8 +10,8 @@ Search: <input type="text" id="anime_search"/><br><br>
 
 <div id = "anime_listings">
 {% for anime in animeList %}
-    {% if anime.title != "placeholder" %}
-        <b>{{ anime.title }}</b> <br>
+    {% if anime.official_title != "placeholder" %}
+        <b>{{ anime.official_title }}</b> <br>
         Current Episode: {{ anime.current_episode.max_episode }}<br/>
         {% for torrent in anime.latest_episodes %}
             {{ torrent.fansub }}

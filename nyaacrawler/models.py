@@ -6,12 +6,12 @@ from django.contrib.contenttypes import generic
 # Create your models here.
 
 class Anime(models.Model):
-    title = models.CharField(max_length=200)
+    official_title = models.CharField(max_length=200)
     image = models.URLField(blank=True)
-    desc = models.TextField()
     init = models.BooleanField()
+
     def __unicode__(self):
-    	return self.title
+    	return self.official_title
     def latest_episodes(self):
     	return self.torrents.all().filter(episode=self.current_episode()['max_episode'])
     def current_episode(self):
@@ -21,6 +21,7 @@ class Anime(models.Model):
 class AnimeAlias(models.Model):
     anime = models.ForeignKey(Anime, related_name="animeAliases")
     alias_name = models.CharField(max_length=200)
+
     def __unicode__(self):
     	return self.alias_name
 
@@ -32,11 +33,12 @@ class Torrent(models.Model):
     quality = models.CharField(max_length=10)
     url = models.URLField()
     tracker = models.CharField(max_length=40)
-    infoHash = models.CharField(max_length=30)
+    infoHash = models.CharField(max_length=40)
     vidFormat = models.CharField(max_length=10)
     published = models.BooleanField(default=True)
+
     def __unicode__(self):
-        return self.anime.title
+        return self.anime.official_title
     def get_matching_subscriptions(self):
         return self.anime.subscriptions.filter(
             Q (qualities__contains=(self.quality)) | Q(qualities='all'),
@@ -62,6 +64,7 @@ class User(models.Model):
 
     confirmed_registered = models.BooleanField()
     confirmed_subscription = models.BooleanField()
+
     def __unicode__(self):
         return self.email
 
@@ -77,9 +80,10 @@ class Subscription(models.Model):
     current_episode = models.FloatField()
     qualities = models.CharField(max_length=30)
     fansubs = models.CharField(max_length=250)
+
     def get_email(self):
         return self.user.email
     def increment_episode(self):
         self.current_episode += 1
     def __unicode__(self):
-        return self.user.email+" - "+self.anime.title
+        return self.user.email+" - "+self.anime.official_title

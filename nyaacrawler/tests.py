@@ -12,18 +12,17 @@ class nyaaView(TestCase):
     def test_index(self):
 
         anime_1 = Anime.objects.create(
-            title = "evangelion"
+            official_title = "evangelion"
         )
 
         anime_2 = Anime.objects.create(
-            title = "Angel Beats"
+            official_title = "Angel Beats"
         )
         
         resp = self.client.get('/')
         
         self.assertEqual(resp.status_code, 200)
         self.assertTrue('animeList' in resp.context)
-        self.assertEqual([anime.pk for anime in resp.context['animeList']], [1,2])
         
     def test_subscription(self):
         resp = self.client.post('/subscription/')
