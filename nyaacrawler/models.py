@@ -7,6 +7,9 @@ from django.contrib.contenttypes import generic
 
 class Anime(models.Model):
     title = models.CharField(max_length=200)
+    image = models.URLField(blank=True)
+    desc = models.TextField()
+    init = models.BooleanField()
     def __unicode__(self):
     	return self.title
     def latest_episodes(self):
@@ -31,6 +34,7 @@ class Torrent(models.Model):
     tracker = models.CharField(max_length=40)
     infoHash = models.CharField(max_length=30)
     vidFormat = models.CharField(max_length=10)
+    published = models.BooleanField(default=True)
     def __unicode__(self):
         return self.anime.title
     def get_matching_subscriptions(self):

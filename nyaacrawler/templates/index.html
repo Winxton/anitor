@@ -1,20 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
 <script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.2/jquery.min.js"></script>
+</head>
 
-<input type="text" id="anime_search"/>
-<br/><br/>
+<body>
+<h3>Anime Listings</h3>
+Search: <input type="text" id="anime_search"/><br><br>
 
-Anime Listings <br>
 <div id = "anime_listings">
 {% for anime in animeList %}
-    <b>{{ anime.title }}</b> <br>
-    Current Episode: {{ anime.current_episode.max_episode }}<br/>
-    {% for torrent in anime.latest_episodes %}
-        {{ torrent.fansub }}
-        {{ torrent.episode }}
-        {{ torrent.quality }}
+    {% if anime.title != "placeholder" %}
+        <b>{{ anime.title }}</b> <br>
+        Current Episode: {{ anime.current_episode.max_episode }}<br/>
+        {% for torrent in anime.latest_episodes %}
+            {{ torrent.fansub }}
+            {{ torrent.episode }}
+            {{ torrent.quality }}
+            <br>
+        {% endfor %}
         <br>
-    {% endfor %}
-    <br>
+    {% endif %}
 {% endfor %}
 </div>
 
@@ -39,18 +45,20 @@ $('#anime_search').keyup(function() {
                 function(ani_key, ani_value) {
                     var startIdx = ani_value['title'].toLowerCase().indexOf(searchTerm);
                     var endIdx = startIdx + searchTerm.length;
-                    var html = "<br/>"+ani_key +" "+ boldSelected(ani_value['title'], startIdx, endIdx);
+                    var html = ani_key +" "+ boldSelected(ani_value['title'], startIdx, endIdx);
                     
                     var torrents = ani_value['torrents'];
 
                     $.each(
                         torrents,
                         function(tor_key, tor_val) {
-                            html += "<br/>";
+                            html += "<br>";
                             html += (tor_val['fansub']);
                             html += (tor_val['quality']);
                         }
                     );
+                    
+                    html += '<br><br>'
                     
                     $("#anime_listings").append(html);
                 }
@@ -61,3 +69,5 @@ $('#anime_search').keyup(function() {
 
 });
 </script>
+</body>
+</html>

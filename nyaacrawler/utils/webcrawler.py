@@ -74,16 +74,15 @@ def crawl_anime():
             episode = res.group(3)
             quality = format(res.group(4))
             vidFormat = format(res.group(5))
+
+            animeObj = AnimeAlias.objects.filter(alias_name=animeName)
             
-            #animeObj = AnimeAlias.objects.filter(alias_name=animeName)
-            animeObjs = Anime.objects.filter(title=animeName)            
-            
-            if animeObjs.count():
-                animeObj = animeObjs[0];
-                """
+            if animeObj.count():
+                animeObj = animeObj[0].anime;
+                
                 if str(animeObj) == "placeholder":
                     continue
-                """
+
                 torrentObj, created = Torrent.objects.get_or_create(
                     url = url,
                     defaults = {
@@ -94,19 +93,17 @@ def crawl_anime():
                         'vidFormat' :   vidFormat,
                     }
                 )
-                print animeObj, " Torrent created"
+                
                 # torrent_arrived(torrentObj)
 
             elif animeName not in unidentifiedNames:
                 unidentifiedNames.append(animeName)
-            
 
         except:
             print('Error at: ' + item.get_text())
             print('with error: ' + str(sys.exc_info()) + '\n')
     
     print ('Crawl completed')
-    """
     if len(unidentifiedNames):
         for name in sorted(unidentifiedNames):
             # store these names as alias to anime "placeholder"
@@ -114,4 +111,4 @@ def crawl_anime():
                 anime = Anime.objects.get(title='placeholder'),
                 alias_name = name
             )
-    """
+        print ('new anime alias added')

@@ -29,7 +29,7 @@ def get_anime_list(request):
 
     response = []
     
-    anime_list = Anime.objects.filter(title__icontains=search_string)
+    anime_list = Anime.objects.filter(title__icontains=search_string).exclude(id=1)
     
     for anime in anime_list:
         animeObj = {}

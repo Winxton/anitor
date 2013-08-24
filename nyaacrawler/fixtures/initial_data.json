@@ -1,0 +1,9 @@
+[
+  {
+    "model": "nyaacrawler.anime",
+    "pk": 1,
+    "fields": {
+      "title": "placeholder"
+    }
+  }
+]
