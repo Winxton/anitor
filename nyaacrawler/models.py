@@ -6,39 +6,52 @@ from django.contrib.contenttypes import generic
 # Create your models here.
 
 class Anime(models.Model):
+    """
+    The official anime 'entity'
+    """
     official_title = models.CharField(max_length=200)
     image = models.URLField(blank=True)
-    init = models.BooleanField()
 
     def __unicode__(self):
-    	return self.official_title
+        return self.official_title
     def latest_episodes(self):
-    	return self.torrents.all().filter(episode=self.current_episode()['max_episode'])
+        return Torrent.objects.filter(
+            Q(episode=self.current_episode()['max_episode']),
+            Q(title__anime=self)
+            )
     def current_episode(self):
-    	#ex: ["max_episode" : num]
-    	return self.torrents.aggregate(max_episode=Max('episode'))
+        #ex: ["max_episode" : num]
+        return Torrent.objects.filter(
+                title__anime=self
+            ).aggregate(
+                max_episode=Max('episode')
+            )
 
 class AnimeAlias(models.Model):
-    anime = models.ForeignKey(Anime, related_name="animeAliases")
-    alias_name = models.CharField(max_length=200)
+    """
+    Anime name given by the fansub group.
+    Used because an anime can have multiple names
+    """
+    anime = models.ForeignKey(Anime, related_name="anime_aliases")
+    title = models.CharField(max_length=200)
+    confirmed = models.BooleanField()
 
     def __unicode__(self):
-    	return self.alias_name
+        return self.title
 
 class Torrent(models.Model):
-    anime = models.ForeignKey(Anime, related_name='torrents')
+    title = models.ForeignKey(AnimeAlias, related_name='torrents')
     torrent_name = models.CharField(max_length=200)
     episode = models.FloatField()
     fansub = models.CharField(max_length=30)
     quality = models.CharField(max_length=10)
     url = models.URLField()
-    tracker = models.CharField(max_length=40)
-    infoHash = models.CharField(max_length=40)
+    infoHash = models.CharField(max_length=40, null=True)
     vidFormat = models.CharField(max_length=10)
     published = models.BooleanField(default=True)
 
     def __unicode__(self):
-        return self.anime.official_title
+        return self.title.anime.official_title
     def get_matching_subscriptions(self):
         return self.anime.subscriptions.filter(
             Q (qualities__contains=(self.quality)) | Q(qualities='all'),

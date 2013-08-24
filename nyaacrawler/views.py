@@ -9,18 +9,18 @@ import json
 def index(request):
 	anime = Anime.objects.all().exclude(official_title="unknown-anime-placeholder")
 
-	torrent = Torrent.objects.all()
-
-	context = {'animeList': anime, "torrentList":torrent}
+	context = {'animeList': anime}
 	return render(request, 'index.html', context)
 
 @require_http_methods(["POST"])
 def save_subscription(request):
+    """
+    Saves a subscription
+    given the email and a comma delimited list 
+    of fansub groups and qualities 
+    """
     results = {'success':False}
-    """
-    TODO: pass in subscription parameters,
-    create parameter object
-    """
+    
     json_result = json.dumps(results)
     return HttpResponse(json_result, content_type='application/json')
 
