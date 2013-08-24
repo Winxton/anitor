@@ -7,7 +7,7 @@ from django.http import HttpResponse
 import json
 
 def index(request):
-	anime = Anime.objects.all().exclude(official_title="unknown-anime-placeholder")
+	anime = Anime.objects.all().exclude(official_title=Anime.UNKNOWN_ANIME)
 
 	context = {'animeList': anime}
 	return render(request, 'index.html', context)
@@ -29,7 +29,7 @@ def get_anime_list(request):
 
     response = []
     
-    anime_list = Anime.objects.filter(official_title__icontains=search_string).exclude(official_title="unknown-anime-placeholder")
+    anime_list = Anime.objects.filter(official_title__icontains=search_string).exclude(official_title=Anime.UNKNOWN_ANIME)
     
     for anime in anime_list:
         animeObj = {}
