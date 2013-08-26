@@ -1,0 +1,30 @@
+{% extends "admin/base_site.html" %}
+{% load i18n l10n admin_urls %}
+
+{% block bodyclass %}app-{{ opts.app_label }} model-{{ opts.object_name.lower }} migration-confirmation{% endblock %}
+
+{% block breadcrumbs %}
+<div class="breadcrumbs">
+<a href="{% url 'admin:index' %}">{% trans 'Home' %}</a>
+&rsaquo; <a href="{% url 'admin:app_list' app_label=app_label %}">{{ app_label|capfirst|escape }}</a>
+&rsaquo; <a href="{% url opts|admin_urlname:'changelist' %}">{{ opts.verbose_name_plural|capfirst }}</a>
+&rsaquo; {% trans "Migrate multiple anime alias'" %}
+</div>
+{% endblock %}
+
+{% block content %}
+    <p>The following {{ objects_name }} will be migrated:</p>
+    {% for migrateable_object in migrateable_objects %}
+        <ul>{{ migrateable_object|unordered_list }}</ul>
+    {% endfor %}
+    
+    <form action="" method="post">{% csrf_token %}<div>
+    {% for obj in queryset %}
+    <input type="hidden" name="_selected_action" value="{{ obj.pk|unlocalize }}" />
+    {% endfor %}
+    <input type="hidden" name="action" value="migrate_selected" />
+    <input type="text" name="newOfficialAnimeName" placeholder="Offical Anime Name Here" />
+    <input type="submit" value="Migrate" />
+    </div>
+    </form>
+{% endblock %}
