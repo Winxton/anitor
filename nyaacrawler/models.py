@@ -31,6 +31,7 @@ class Anime(models.Model):
                 max_episode=Max('episode')
             )
 
+
 class AnimeAlias(models.Model):
     """
     Anime name given by the fansub group.
@@ -38,7 +39,7 @@ class AnimeAlias(models.Model):
     """
     anime = models.ForeignKey(Anime, related_name="anime_aliases")
     title = models.CharField(max_length=200)
-    initialized = models.BooleanField()
+    accepted = models.BooleanField()
 
     def __unicode__(self):
         return self.title
@@ -47,11 +48,17 @@ class AnimeAlias(models.Model):
     # post-save signals as alternative?
     def save(self, *args, **kwargs):
         from nyaacrawler.utils.webcrawler import crawl_specific_anime
-        if self.pk and not self.initialized and self.anime.official_title != Anime.UNKNOWN_ANIME:
-            super(AnimeAlias, self).save()  # change self.anime
-            crawl_specific_anime(self)
-            self.initialized = True
+        do_crawl = False
+
+        if self.pk and not self.accepted and self.anime.official_title != Anime.UNKNOWN_ANIME:
+            self.accepted = True
+            do_crawl = True
+
         super(AnimeAlias, self).save()
+
+        if do_crawl:
+            crawl_specific_anime(self)
+
 
 class Torrent(models.Model):
     title = models.ForeignKey(AnimeAlias, related_name='torrents')
@@ -66,7 +73,6 @@ class Torrent(models.Model):
     seeders = models.PositiveIntegerField()
     leechers = models.PositiveIntegerField()
 
-
     def __unicode__(self):
         return self.title.anime.official_title
 
@@ -76,6 +82,7 @@ class Torrent(models.Model):
             Q (fansubs__contains=(self.fansub)) | Q(fansubs='all'),
             Q (current_episode=self.episode-1)
         )
+
 
 class User(models.Model):
     email = models.EmailField()
@@ -105,6 +112,7 @@ class User(models.Model):
     def set_registered(self):
         self.confirmed_registered = True
 
+
 class Subscription(models.Model):
     user = models.ForeignKey(User, related_name="subscriptions")
     anime = models.ForeignKey(Anime, related_name="subscriptions")
@@ -114,7 +122,9 @@ class Subscription(models.Model):
 
     def get_email(self):
         return self.user.email
+
     def increment_episode(self):
         self.current_episode += 1
+
     def __unicode__(self):
         return self.user.email+" - "+self.anime.official_title

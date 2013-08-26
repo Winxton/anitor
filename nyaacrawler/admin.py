@@ -16,7 +16,7 @@ class AnimeAdmin(admin.ModelAdmin):
     ]
 
 class AnimeAliasAdmin(admin.ModelAdmin):
-    list_display = ('anime', 'title')
+    list_display = ('anime', 'title', 'accepted')
     search_fields = ('title',)
 
     def migrate_selected(self, request, queryset):
@@ -30,19 +30,17 @@ class AnimeAliasAdmin(admin.ModelAdmin):
             )))
 
             for anime_alias in queryset:
-                if not anime_alias.initialized:
-                    crawl_specific_anime(anime_alias)
-                    anime_alias.initialized = True
+                if not anime_alias.accepted:
                     anime_alias.save()
-                
+
             if rows_migrated:
                 message_bit = "Anime Alias' Anime pointer updated."
             else:
                 message_bit = "No Alias modified."
-            
+
             self.message_user(request, message_bit)
             return None
-        
+
         context = {
             "title"         :   "Pending Migration",
             "migrateable_objects"   :   [queryset],
@@ -69,7 +67,7 @@ class UserAdmin(admin.ModelAdmin):
 
 class SubscriptionAdmin(admin.ModelAdmin):
     list_display = ('user', 'anime')
-    
+
 admin.site.register(models.Anime, AnimeAdmin)
 
 admin.site.register(models.AnimeAlias, AnimeAliasAdmin)
