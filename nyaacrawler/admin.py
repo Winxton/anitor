@@ -3,9 +3,17 @@ from django.template.response import TemplateResponse
 from nyaacrawler import models
 from nyaacrawler.utils.webcrawler import crawl_specific_anime
 
+class AliasNamesInline(admin.StackedInline):
+    model = models.AnimeAlias
+    fk_name = 'anime'
+
 class AnimeAdmin(admin.ModelAdmin):
     list_display = ('official_title',)
     search_fields = ('official_title',)
+
+    inlines = [
+        AliasNamesInline
+    ]
 
 class AnimeAliasAdmin(admin.ModelAdmin):
     list_display = ('anime', 'title')
