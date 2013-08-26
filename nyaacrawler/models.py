@@ -6,6 +6,8 @@ from django.contrib.contenttypes import generic
 # Create your models here.
 
 class Anime(models.Model):
+    UNKNOWN_ANIME = 'unknown-anime-placeholder'
+
     """
     The official anime 'entity'
     """
@@ -16,8 +18,8 @@ class Anime(models.Model):
         return self.official_title
     def latest_episodes(self):
         return Torrent.objects.filter(
-            Q(episode=self.current_episode()['max_episode']),
-            Q(title__anime=self)
+            episode=self.current_episode()['max_episode'],
+            title__anime=self
             )
     def current_episode(self):
         #ex: ["max_episode" : num]
@@ -49,6 +51,9 @@ class Torrent(models.Model):
     infoHash = models.CharField(max_length=40, null=True)
     vidFormat = models.CharField(max_length=10)
     published = models.BooleanField(default=True)
+    seeders = models.PositiveIntegerField()
+    leechers = models.PositiveIntegerField()
+
 
     def __unicode__(self):
         return self.title.anime.official_title

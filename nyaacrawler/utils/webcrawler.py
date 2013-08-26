@@ -141,7 +141,7 @@ def crawl_page(url):
                 anime_alias_obj = AnimeAlias.objects.get(title=animeName) 
             except AnimeAlias.DoesNotExist:
                 anime_alias_obj = AnimeAlias.objects.create(
-                    anime = Anime.objects.get(official_title='unknown-anime-placeholder'),
+                    anime = Anime.objects.get(official_title=Anime.UNKNOWN_ANIME),
                     title = animeName
                 )
 
@@ -154,7 +154,7 @@ def crawl_page(url):
             Calculating the info hash is an expensive process, so it is 
             only calculated if the alias is confirmed
             """
-            if animeObj.official_title != "unknown-anime-placeholder":
+            if animeObj.official_title != Anime.UNKNOWN_ANIME:
                 info_hash = get_torrent_info_hash(torrent_link)
             
             torrentObj, created = Torrent.objects.get_or_create(
@@ -166,7 +166,9 @@ def crawl_page(url):
                     'fansub'    :   fansub,
                     'quality'   :   quality,       
                     'vidFormat' :   vidFormat,
-                    'infoHash'  :   info_hash
+                    'infoHash'  :   info_hash,
+                    'seeders'   :   seeders,
+                    'leechers'  :   leechers
                 }
             )
             print ("torrent for " + str(torrentObj) + " added")
