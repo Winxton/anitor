@@ -16,11 +16,13 @@ class Anime(models.Model):
 
     def __unicode__(self):
         return self.official_title
+
     def latest_episodes(self):
         return Torrent.objects.filter(
             episode=self.current_episode()['max_episode'],
             title__anime=self
             )
+
     def current_episode(self):
         #ex: ["max_episode" : num]
         return Torrent.objects.filter(
@@ -36,10 +38,20 @@ class AnimeAlias(models.Model):
     """
     anime = models.ForeignKey(Anime, related_name="anime_aliases")
     title = models.CharField(max_length=200)
-    confirmed = models.BooleanField()
+    initialized = models.BooleanField()
 
     def __unicode__(self):
         return self.title
+
+    # override save operation to watch for 'anime' change from admin page only
+    # post-save signals as alternative?
+    def save(self, *args, **kwargs):
+        from nyaacrawler.utils.webcrawler import crawl_specific_anime
+        if self.pk and not self.initialized and self.anime.official_title != Anime.UNKNOWN_ANIME:
+            super(AnimeAlias, self).save()  # change self.anime
+            crawl_specific_anime(self)
+            self.initialized = True
+        super(AnimeAlias, self).save()
 
 class Torrent(models.Model):
     title = models.ForeignKey(AnimeAlias, related_name='torrents')
@@ -57,6 +69,7 @@ class Torrent(models.Model):
 
     def __unicode__(self):
         return self.title.anime.official_title
+
     def get_matching_subscriptions(self):
         return self.anime.subscriptions.filter(
             Q (qualities__contains=(self.quality)) | Q(qualities='all'),

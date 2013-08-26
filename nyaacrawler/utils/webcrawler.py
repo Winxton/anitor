@@ -77,9 +77,9 @@ def crawl_specific_anime(anime_name):
     Scrapes an anime using the search in nyaa.se
     """
     continue_crawl = True
+    offset = 0
 
     while continue_crawl:
-        offset = 0
 
         query_parameters = {
             'page' : 'search',
@@ -88,7 +88,7 @@ def crawl_specific_anime(anime_name):
             'offset' : offset
         }
 
-        url = base_url +'?'+ urllib.urlencode(query_parameters)        
+        url = BASE_URL +'?'+ urllib.urlencode(query_parameters)
         num_rows = crawl_page(url)
 
         continue_crawl = num_rows > 0
@@ -132,8 +132,8 @@ def crawl_page(url):
             url = nametd.a['href']
             torrent_link = item.find('td',{"class":'tlistdownload'}).a['href']
             size = item.find('td',{'class':'tlistsize'}).get_text()
-            seeders = item.find('td',{'class':'tlistln'}).get_text()
-            leechers = item.find('td',{'class':'tlistdn'}).get_text()
+            seeders = item.find('td',{'class':'tlistsn'}).get_text()
+            leechers = item.find('td',{'class':'tlistln'}).get_text()
 
             anime_alias_obj = None
 
@@ -154,25 +154,30 @@ def crawl_page(url):
             Calculating the info hash is an expensive process, so it is 
             only calculated if the alias is confirmed
             """
-            if animeObj.official_title != Anime.UNKNOWN_ANIME:
+            if animeObj.official_title != Anime.UNKNOWN_ANIME and not anime_alias_obj.initialized:
                 info_hash = get_torrent_info_hash(torrent_link)
             
             torrentObj, created = Torrent.objects.get_or_create(
                 url = url,
                 defaults = {
                     'torrent_name'  :   torrent_name,
-                    'title'   :   anime_alias_obj,
-                    'episode'   :   episode,
-                    'fansub'    :   fansub,
-                    'quality'   :   quality,       
-                    'vidFormat' :   vidFormat,
-                    'infoHash'  :   info_hash,
-                    'seeders'   :   seeders,
-                    'leechers'  :   leechers
+                    'title'         :   anime_alias_obj,
+                    'episode'       :   episode,
+                    'fansub'        :   fansub,
+                    'quality'       :   quality,
+                    'vidFormat'     :   vidFormat,
+                    'infoHash'      :   info_hash,
+                    'seeders'       :   seeders,
+                    'leechers'      :   leechers
                 }
             )
-            print ("torrent for " + str(torrentObj) + " added")
-            # torrent_arrived(torrentObj)
+
+            if created:
+                print ("torrent for " + str(torrentObj) + " added")
+                # torrent_arrived(torrentObj)
+            else:
+                print ("torrent already exist.")
+                # update data
 
         except:
             print('Error at: ' + item.get_text())

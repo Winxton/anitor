@@ -23,7 +23,11 @@
     <input type="hidden" name="_selected_action" value="{{ obj.pk|unlocalize }}" />
     {% endfor %}
     <input type="hidden" name="action" value="migrate_selected" />
-    <input type="text" name="newOfficialAnimeName" placeholder="Offical Anime Name Here" />
+    <select name="newOfficialAnimeName">
+        {% for name in animeNames %}
+            <option value="{{ name }}">{{ name }}</option>
+        {% endfor %}
+    </select>
     <input type="submit" value="Migrate" />
     </div>
     </form>
