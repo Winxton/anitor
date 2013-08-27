@@ -42,6 +42,11 @@ def get_anime_list(request):
             torrentObj = {}
             torrentObj['fansub'] = torrent.fansub
             torrentObj['quality'] = torrent.quality
+            torrentObj['seeders'] = torrent.seeders
+            torrentObj['leechers'] = torrent.leechers
+            torrentObj['torrent_link'] = torrent.url
+            torrentObj['file_size'] = torrent.file_size
+
             animeObj['torrents'].append(torrentObj)
 
         response.append(animeObj)

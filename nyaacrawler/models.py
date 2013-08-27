@@ -72,6 +72,7 @@ class Torrent(models.Model):
     published = models.BooleanField(default=True)
     seeders = models.PositiveIntegerField()
     leechers = models.PositiveIntegerField()
+    file_size = models.CharField(max_length=15)
 
     def __unicode__(self):
         return self.title.anime.official_title
