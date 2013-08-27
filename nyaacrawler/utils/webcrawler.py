@@ -133,7 +133,7 @@ def crawl_page(url):
 
             url = nametd.a['href']
             torrent_link = item.find('td',{"class":'tlistdownload'}).a['href']
-            size = item.find('td',{'class':'tlistsize'}).get_text()
+            file_size = item.find('td',{'class':'tlistsize'}).get_text()
             seeders = item.find('td',{'class':'tlistsn'}).get_text()
             leechers = item.find('td',{'class':'tlistln'}).get_text()
 
@@ -163,7 +163,8 @@ def crawl_page(url):
                     'quality'       :   quality,
                     'vidFormat'     :   vidFormat,
                     'seeders'       :   seeders,
-                    'leechers'      :   leechers
+                    'leechers'      :   leechers,
+                    'file_size'     :   file_size
                 }
             )
             
