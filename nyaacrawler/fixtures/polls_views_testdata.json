@@ -1,0 +1,34 @@
+[
+{
+    "pk": 1, 
+    "model": "nyaacrawler.anime", 
+    "fields": {
+        "official_title": "unknown-anime-placeholder", 
+        "image": ""
+    }
+},
+{
+    "pk": 2, 
+    "model": "nyaacrawler.anime", 
+    "fields": {
+        "official_title": "Shingeki no Kyojin", 
+        "image": ""
+    }
+},
+{
+    "pk": 3, 
+    "model": "nyaacrawler.anime", 
+    "fields": {
+        "official_title": "evangelion", 
+        "image": ""
+    }
+},
+{
+    "pk": 4, 
+    "model": "nyaacrawler.anime", 
+    "fields": {
+        "official_title": "Angel Beats", 
+        "image": ""
+    }
+}
+]

@@ -7,24 +7,42 @@ from django.test import TestCase
 
 from nyaacrawler.models import Anime,Torrent, Subscription
 
-class nyaaView(TestCase):
-    
+import json
+
+class NyaaView(TestCase):
+    fixtures = ['nyaacrawler_testdata.json']
+
     def test_index(self):
 
-        anime_1 = Anime.objects.create(
-            official_title = "evangelion"
-        )
-
-        anime_2 = Anime.objects.create(
-            official_title = "Angel Beats"
-        )
-        
         resp = self.client.get('/')
         
         self.assertEqual(resp.status_code, 200)
         self.assertTrue('animeList' in resp.context)
+
+    def testSubscribeBadEmail(self):
+
+        subscription = {
+            'email' : "bademail",
+            'key'   : 2,
+            'qualities' : "720p,480p",
+            'fansub_groups' : "somesubgroup",
+            'episode'   : 10
+        }
+        resp = self.client.post('/subscribe/', content_type='application/json', data=json.dumps(subscription))
         
-    def test_subscription(self):
-        resp = self.client.post('/subscription/')
         self.assertEqual(resp.status_code, 200)
+        self.assertEqual (json.loads(resp.content)['success'], False)
+
+    def testSubscribeSuccess(self):
+
+        subscription = {
+            'email' : "test@example.com",
+            'key'   : 2,
+            'qualities' : "720p,480p",
+            'fansub_groups' : "somesubgroup",
+            'episode'   : 10
+        }
+        resp = self.client.post('/subscribe/', content_type='application/json', data=json.dumps(subscription))
         
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual (json.loads(resp.content)['success'], True)
