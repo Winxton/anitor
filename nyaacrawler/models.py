@@ -53,26 +53,17 @@ class AnimeAlias(models.Model):
     """
     anime = models.ForeignKey(Anime, related_name="anime_aliases")
     title = models.CharField(max_length=200)
-    accepted = models.BooleanField()
+    #whether an initialization has been done already
+    is_initialized = models.BooleanField(default=False)
+    #whether an initialization needs to be done
+    do_initialize = models.BooleanField(default=False)
 
     def __unicode__(self):
         return self.title
 
-    # override save operation to watch for 'anime' change from admin page only
-    # post-save signals as alternative?
-    def save(self, *args, **kwargs):
-        from nyaacrawler.utils.webcrawler import crawl_specific_anime
-        do_crawl = False
-
-        if self.pk and not self.accepted and self.anime.official_title != Anime.UNKNOWN_ANIME:
-            self.accepted = True
-            do_crawl = True
-
-        super(AnimeAlias, self).save()
-
-        if do_crawl:
-            crawl_specific_anime(self)
-
+    def set_initialized(self):
+        self.do_initialize = False
+        self.is_initialized = True
 
 class Torrent(models.Model):
     title = models.ForeignKey(AnimeAlias, related_name='torrents')
