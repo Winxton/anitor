@@ -14,7 +14,7 @@ class Anime(models.Model):
     UNKNOWN_ANIME = 'unknown-anime-placeholder'
 
     official_title = models.CharField(max_length=200)
-    image = models.URLField(blank=True)
+    image = models.URLField(blank=True, null=True)
 
     def __unicode__(self):
         return self.official_title
@@ -38,6 +38,12 @@ class Anime(models.Model):
     def get_unknown_placeholder(cls):
         unknown_placeholder = cls.objects.get(official_title=Anime.UNKNOWN_ANIME)
         return unknown_placeholder
+
+    def save(self, *args, **kwargs):
+        from nyaacrawler.utils import MyAnimeList 
+        if not self.image:
+            self.image = MyAnimeList.get_anime_image_url(self.official_title)
+        super(Anime, self).save()
 
 
 class AnimeAlias(models.Model):
