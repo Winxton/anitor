@@ -1,5 +1,5 @@
 from nyaacrawler.models import Anime, Torrent, AnimeAlias
-#from nyaacrawler.utils import emailSender
+from nyaacrawler.utils import emailSender
 
 from bs4 import BeautifulSoup
 
@@ -15,6 +15,7 @@ import sys
 BASE_URL = 'http://www.nyaa.se/'
 ENGLISH_TRANSLATED = '1_37'
 TRUSTED_ONLY = 2
+
 
 def torrent_arrived(torrent):
     """
@@ -65,8 +66,9 @@ def crawl_anime():
     """
     #url to crawl
     query_parameters = {
+        'page' : 'rss',
         'cats' : ENGLISH_TRANSLATED,
-        'filter' : TRUSTED_ONLY
+        'filter' : TRUSTED_ONLY,
     }
 
     url = BASE_URL + '?' + urllib.urlencode(query_parameters)
@@ -82,7 +84,7 @@ def crawl_specific_anime(anime_name):
     while continue_crawl:
 
         query_parameters = {
-            'page' : 'search',
+            'page' : 'rss',
             'cats' : ENGLISH_TRANSLATED, 
             'term' : anime_name,
             'offset' : offset
@@ -105,18 +107,16 @@ def crawl_page(url):
 
     c=urllib2.urlopen(url)
 
-    soup=BeautifulSoup(c.read())
-    record_list = soup.find_all('tr', {"class" : "tlistrow"})
+    soup=BeautifulSoup(c.read(), 'xml')
 
+    record_list = soup.find_all('item')
     num_rows = len(record_list)
-
     num_created = 0
 
     for item in record_list:
         try:
-            nametd = item.find('td',{"class":'tlistname'})
 
-            torrent_name = nametd.get_text()
+            torrent_name = item.title.text
 
             # extract data after some normalization
             res = regex.match(torrent_name.replace('_', ' '))
@@ -131,14 +131,19 @@ def crawl_page(url):
             quality = format(res.group(4))
             vidFormat = format(res.group(5))
 
-            url = nametd.a['href']
-            torrent_link = item.find('td',{"class":'tlistdownload'}).a['href']
-            file_size = item.find('td',{'class':'tlistsize'}).get_text()
-            seeders = item.find('td',{'class':'tlistsn'}).get_text()
-            leechers = item.find('td',{'class':'tlistln'}).get_text()			
+            url = item.guid.text
+            torrent_link = item.link.text
+            description = item.description.text
+
+            description_regex = re.compile("(\d+)\sseeder\(s\),\s(\d+)\sleecher\(s\),\s\d+\sdownload\(s\)\s-\s(\d+(?:\.\d+)?\s[MG]iB)\s")
+            description_res = description_regex.match(description)
+            
+            seeders = description_res.group(1)
+            leechers = description_res.group(2)
+            file_size = description_res.group(3)
 
             #A new alias name is stored if it has not been detected yet
-
+            
             anime_alias_obj, created = AnimeAlias.objects.get_or_create(
                 title = animeName,
                 defaults = {
@@ -173,7 +178,7 @@ def crawl_page(url):
                     num_created += 1
 
                     # torrent_arrived(torrentObj)
-
+            
         except:
             print('Error at: ' + item.get_text())
             print('with error: ' + str(sys.exc_info()) + '\n')
