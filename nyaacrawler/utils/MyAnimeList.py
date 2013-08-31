@@ -15,6 +15,7 @@ def get_anime_search_info(anime_name):
 	return content
 
 def parse_image_url(url):
+	#removes the 't' for thumbnail
 	parsed_url = url[:-5] + url[-4:]
 	return parsed_url
 
@@ -24,6 +25,6 @@ def get_anime_image_url(anime_name):
 	if content_json:
 		#usually the most accurate result
 		firstResult = content_json[0]
-		print parse_image_url(firstResult['image_url'])
+		return parse_image_url(firstResult['image_url'])
 	else:
-		return None
+		return ""
