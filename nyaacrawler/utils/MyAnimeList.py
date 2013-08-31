@@ -16,8 +16,10 @@ def get_anime_search_info(anime_name):
 
 def parse_image_url(url):
 	#removes the 't' for thumbnail
-	parsed_url = url[:-5] + url[-4:]
-	return parsed_url
+	if (url[-5:-4] == 't'):
+		return url[:-5] + url[-4:]
+	else:
+		return url
 
 def get_anime_image_url(anime_name):
 	content_json = json.loads(get_anime_search_info(anime_name))
