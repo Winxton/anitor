@@ -137,7 +137,7 @@ def crawl_page(url):
             seeders = item.find('td',{'class':'tlistsn'}).get_text()
             leechers = item.find('td',{'class':'tlistln'}).get_text()			
 
-            #A new alias name is stored if it has not been detected yet         
+            #A new alias name is stored if it has not been detected yet
 
             anime_alias_obj, created = AnimeAlias.objects.get_or_create(
                 title = animeName,
@@ -149,33 +149,30 @@ def crawl_page(url):
             animeObj = anime_alias_obj.anime;
 
             if animeObj.official_title != Anime.UNKNOWN_ANIME:
-                
-                info_hash = get_torrent_info_hash(torrent_link)
 
-                torrentObj, created = Torrent.objects.get_or_create(
-                    url = url,
-                    defaults = {
-                        'torrent_name'  :   torrent_name,
-                        'title'         :   anime_alias_obj,
-                        'episode'       :   episode,
-                        'fansub'        :   fansub,
-                        'quality'       :   quality,
-                        'vidFormat'     :   vidFormat,
-                        'seeders'       :   seeders,
-                        'leechers'      :   leechers,
-                        'file_size'     :   file_size,
-                        'infoHash'      :   info_hash
-                    }
-                )
+                if (Torrent.objects.filter(url=url).exists()):
+                    print ("torrent already exist: " + torrent_name)
 
-                if created:
+                else:
+                    info_hash = get_torrent_info_hash(torrent_link)
+                    torrentObj = Torrent.objects.create(
+                            url           =   url,
+                            torrent_name  =   torrent_name,
+                            title         =   anime_alias_obj,
+                            episode       =   episode,
+                            fansub        =   fansub,
+                            quality       =   quality,
+                            vidFormat     =   vidFormat,
+                            seeders       =   seeders,
+                            leechers      =   leechers,
+                            file_size     =   file_size,
+                            infoHash      =   info_hash
+                    )
+                    
                     print ("torrent for " + str(torrentObj) + ": " + torrent_name +" added")
                     num_created += 1
+
                     # torrent_arrived(torrentObj)
-                else:
-                    print ("torrent already exist: " + torrent_name)
-                    # update data
-                print ('')
 
         except:
             print('Error at: ' + item.get_text())
