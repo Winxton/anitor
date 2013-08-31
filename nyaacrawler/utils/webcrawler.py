@@ -29,7 +29,7 @@ def torrent_arrived(torrent):
         subscription.increment_episode()
         #subscription.save()
 
-def get_regex_string():
+def get_title_regex_string():
     #example: [fansub group] anime name - 05 [720p].mkv
     rStr = ''
     # fansub group
@@ -47,6 +47,21 @@ def get_regex_string():
 
     return rStr
 
+def get_meta_regex_string()
+    
+    rStr = ''
+    # seeders
+    rStr += '(\d+)\sseeder\(s\),\s'
+    # leechers
+    rStr += '(\d+)\sleecher\(s\),\s'
+    # downloads (skipped)
+    rStr += '\d+\sdownload\(s\)\s-\s'
+    # size
+    rStr += '(\d+(?:\.\d+)?\s[MG]iB)'
+    
+    return rStr
+    
+    
 def get_torrent_info_hash(torrent_link):
     """
     Gets the info hash from a torrent file
@@ -103,7 +118,8 @@ def crawl_page(url):
     """
     print ("Scraping page... " + url)
 
-    regex = re.compile(get_regex_string())
+    title_regex = re.compile(get_title_regex_string())
+    meta_regex = re.compile(get_meta_regex_string())
 
     c=urllib2.urlopen(url)
 
@@ -117,11 +133,15 @@ def crawl_page(url):
         try:
 
             torrent_name = item.title.text
+            url = item.guid.text
+            torrent_link = item.link.text
+            meta = item.description.text
 
             # extract data after some normalization
-            res = regex.match(torrent_name.replace('_', ' '))
+            res = title_regex.match(torrent_name.replace('_', ' '))
+            meta_res = meta_regex.match(meta)
 
-            if not res:
+            if not res or not meta_res:
                 continue
 
             #get torrent info
@@ -130,17 +150,10 @@ def crawl_page(url):
             episode = res.group(3)
             quality = format(res.group(4))
             vidFormat = format(res.group(5))
-
-            url = item.guid.text
-            torrent_link = item.link.text
-            description = item.description.text
-
-            description_regex = re.compile("(\d+)\sseeder\(s\),\s(\d+)\sleecher\(s\),\s\d+\sdownload\(s\)\s-\s(\d+(?:\.\d+)?\s[MG]iB)\s")
-            description_res = description_regex.match(description)
             
-            seeders = description_res.group(1)
-            leechers = description_res.group(2)
-            file_size = description_res.group(3)
+            seeders = meta_res.group(1)
+            leechers = meta_res.group(2)
+            file_size = meta_res.group(3)
 
             #A new alias name is stored if it has not been detected yet
             
