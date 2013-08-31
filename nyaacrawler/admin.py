@@ -16,7 +16,7 @@ class AnimeAdmin(admin.ModelAdmin):
     ]
 
 class AnimeAliasAdmin(admin.ModelAdmin):
-    list_display = ('anime', 'title', 'accepted')
+    list_display = ('title', 'anime', 'do_initialize', 'is_initialized')
     search_fields = ('title',)
 
     def migrate_selected(self, request, queryset):
@@ -30,7 +30,8 @@ class AnimeAliasAdmin(admin.ModelAdmin):
             )))
 
             for anime_alias in queryset:
-                if not anime_alias.accepted:
+                if not anime_alias.is_initialized:
+                    anime_alias.do_initialize = True
                     anime_alias.save()
 
             if rows_migrated:
