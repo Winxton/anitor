@@ -47,7 +47,7 @@ def get_title_regex_string():
 
     return rStr
 
-def get_meta_regex_string()
+def get_meta_regex_string():
     
     rStr = ''
     # seeders
