@@ -33,7 +33,7 @@ class Anime(models.Model):
                 max_episode=Max('episode')
             )['max_episode']
         return 0 if episode is None else episode
-
+        
     @classmethod
     def get_unknown_placeholder(cls):
         unknown_placeholder = cls.objects.get(official_title=Anime.UNKNOWN_ANIME)
@@ -74,7 +74,6 @@ class Torrent(models.Model):
     url = models.URLField()
     infoHash = models.CharField(max_length=40, null=True)
     vidFormat = models.CharField(max_length=10)
-    published = models.BooleanField(default=True)
     seeders = models.PositiveIntegerField()
     leechers = models.PositiveIntegerField()
     file_size = models.CharField(max_length=15)

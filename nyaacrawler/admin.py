@@ -6,19 +6,51 @@ from nyaacrawler.utils.webcrawler import crawl_specific_anime
 class AliasNamesInline(admin.StackedInline):
     model = models.AnimeAlias
     fk_name = 'anime'
+    fields = ('title',)
+    
+class TorrentsInline(admin.StackedInline):
+    model = models.Torrent
+    fk_name = 'title'
+    fields = ('torrent_name',)
 
+class IsKnownFilter(admin.SimpleListFilter):
+    """
+    Filters known and unknown alias names
+    """
+    title = 'belongs to anime'
+
+    parameter_name = 'known'
+    
+    def lookups(self, request, model_admin):
+        return (
+            ('yes', ('Known anime')),
+            ('no', ('unKnown anime')),
+        )
+    def queryset(self,request,queryset):
+        if self.value() == "yes":
+            return queryset.exclude(anime__official_title=models.Anime.UNKNOWN_ANIME)
+
+        if self.value() == "no":
+            return queryset.filter(anime__official_title=models.Anime.UNKNOWN_ANIME)
+    
 class AnimeAdmin(admin.ModelAdmin):
-    list_display = ('official_title',)
+    list_display = ('official_title', 'image')
     search_fields = ('official_title',)
 
     inlines = [
         AliasNamesInline
     ]
-
+    
 class AnimeAliasAdmin(admin.ModelAdmin):
     list_display = ('title', 'anime', 'do_initialize', 'is_initialized')
     search_fields = ('title',)
 
+    inlines = [
+        TorrentsInline
+    ]
+
+    list_filter = (IsKnownFilter,)
+    
     def migrate_selected(self, request, queryset):
     # Action which changes the selected AnimeAlias' anime foreignkey.
 
