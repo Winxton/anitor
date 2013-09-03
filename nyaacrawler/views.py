@@ -41,7 +41,6 @@ def get_anime_list(request):
 
     return HttpResponse(json.dumps(response), content_type='application/json')
 
-@require_http_methods(["POST"])
 def subscribe(request):
     """
     Saves a subscription given the email and a
@@ -61,7 +60,8 @@ def subscribe(request):
         if (user_form.is_valid()):
 
             user = user_form.save()
-            anime = Anime.objects.get(pk=subscription_request['key'])
+
+            anime = Anime.objects.get(pk=subscription_request['anime_key'])
 
             subscription = Subscription(
                 user = user,
@@ -84,15 +84,25 @@ def subscribe(request):
     json_result = json.dumps(results)
     return HttpResponse(json_result, content_type='application/json')
 
+def confirm_email(request, subscription_activation_key):
+    """
+    Confirmation that the email belongs to a valid user (i.e not spam)
+    """
+    try:
+        user = User.objects.get(subscription_activation_key=subscription_activation_key)
+        user.set_confirmed_email()
+        user.save()
+        
+        #TODO: template for unsubscribe
+        return HttpResponse("Email has been confirmed")
+
+    except Subscription.DoesNotExist: 
+        return HttpResponseRedirect('/')
 
 def unsubscribe(request, unsubscribe_key):
     try:
         subscription = Subscription.objects.get(unsubscribe_key=unsubscribe_key)
         subscription.delete()
-        
-        user = subscription.user
-        if user.has_no_subscriptions():
-            user.delete()
         
         #TODO: template for unsubscribe
         return HttpResponse("Unsubscribed")
