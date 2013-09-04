@@ -3,6 +3,7 @@ from django.shortcuts import render
 from django.views.decorators.http import require_http_methods
 from nyaacrawler.models import *
 from django.http import HttpResponse, HttpResponseRedirect
+from nyaacrawler.utils.emailSender import send_registration_confirmation_email
 
 import json
 
@@ -58,10 +59,14 @@ def subscribe(request):
         user_form = UserForm(email_data)
         
         if (user_form.is_valid()):
-
-            user = user_form.save()
+            
+            user, created = User.objects.get_or_create(**user_form.cleaned_data)
 
             anime = Anime.objects.get(pk=subscription_request['anime_key'])
+
+            #send subscription confirmation email
+            if created:
+                send_registration_confirmation_email(anime, user)
 
             subscription = Subscription(
                 user = user,
@@ -93,7 +98,13 @@ def confirm_email(request, subscription_activation_key):
         user.set_confirmed_email()
         user.save()
         
-        #TODO: template for unsubscribe
+        #update the current episode for subscription
+        subscriptions = user.get_subscriptions()
+        for subscription in subscriptions:
+            subscription.current_episode = subscription.anime.current_episode()
+            subscription.save()
+        
+        #TODO: template for unsubscribe, show current subscriptions
         return HttpResponse("Email has been confirmed")
 
     except Subscription.DoesNotExist: 

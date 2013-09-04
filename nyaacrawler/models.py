@@ -123,7 +123,9 @@ class User(models.Model):
         return self.get_num_subscriptions() == 0
     def get_num_subscriptions(self):
         return self.subscriptions.count()
-
+    def get_subscriptions(self):
+        return self.subscriptions.all()
+        
 class Subscription(models.Model):
     user = models.ForeignKey(User, related_name="subscriptions")
     anime = models.ForeignKey(Anime, related_name="subscriptions")
