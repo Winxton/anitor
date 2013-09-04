@@ -106,12 +106,76 @@ def crawl_specific_anime(anime_name):
         }
 
         url = BASE_URL +'?'+ urllib.urlencode(query_parameters)
-        num_rows = crawl_page(url)
+        num_rows = crawl_page(url, concurrent=True)
 
         continue_crawl = num_rows > 0
         offset += 1
 
-def crawl_page(url):
+def parse_row(title_regex, meta_regex, item):
+    try:
+        torrent_name = item.title.text
+        url = item.guid.text
+        torrent_link = item.link.text
+        meta = item.description.text
+
+        # extract data after some normalization
+        res = title_regex.match(torrent_name.replace('_', ' '))
+        meta_res = meta_regex.match(meta)
+
+        if not res or not meta_res:
+            return
+
+        #get torrent info
+        fansub = res.group(1)
+        animeName = res.group(2)
+        episode = res.group(3)
+        quality = format(res.group(4))
+        vidFormat = format(res.group(5))
+        
+        seeders = meta_res.group(1)
+        leechers = meta_res.group(2)
+        file_size = meta_res.group(3)
+
+        #A new alias name is stored if it has not been detected yet
+        
+        anime_alias_obj, created = AnimeAlias.objects.get_or_create(
+            title = animeName,
+            defaults = {
+                'anime' : Anime.get_unknown_placeholder()
+            }
+        )
+        
+        animeObj = anime_alias_obj.anime;
+
+        if animeObj.official_title != Anime.UNKNOWN_ANIME:
+
+            if (Torrent.objects.filter(url=url).exists()):
+                print ("torrent already exist: " + torrent_name)
+            else:
+                info_hash = get_torrent_info_hash(torrent_link)
+                torrentObj = Torrent.objects.create(
+                        url           =   url,
+                        torrent_name  =   torrent_name,
+                        title         =   anime_alias_obj,
+                        episode       =   episode,
+                        fansub        =   fansub,
+                        quality       =   quality,
+                        vidFormat     =   vidFormat,
+                        seeders       =   seeders,
+                        leechers      =   leechers,
+                        file_size     =   file_size,
+                        infoHash      =   info_hash
+                )
+                
+                print ("torrent for " + str(torrentObj) + ": " + torrent_name +" added")
+
+                # torrent_arrived(torrentObj)
+
+    except:
+        print('Error at: ' + item.get_text())
+        print('with error: ' + str(sys.exc_info()) + '\n')
+
+def crawl_page(url, concurrent=False):
     """
     Scapes a specific nyaa.se page
     returns the number of rows
@@ -127,76 +191,20 @@ def crawl_page(url):
 
     record_list = soup.find_all('item')
     num_rows = len(record_list)
-    num_created = 0
 
-    for item in record_list:
-        try:
+    if concurrent:
+        import threading
+        threads = [threading.Thread(target=parse_row, args=(title_regex, meta_regex, item)) for item in record_list]
+        for t in threads:
+            t.start()
+        for t in threads:
+            t.join()
 
-            torrent_name = item.title.text
-            url = item.guid.text
-            torrent_link = item.link.text
-            meta = item.description.text
+    else:
+        for item in record_list:
+            parse_row(title_regex, meta_regex, item)
 
-            # extract data after some normalization
-            res = title_regex.match(torrent_name.replace('_', ' '))
-            meta_res = meta_regex.match(meta)
-
-            if not res or not meta_res:
-                continue
-
-            #get torrent info
-            fansub = res.group(1)
-            animeName = res.group(2)
-            episode = res.group(3)
-            quality = format(res.group(4))
-            vidFormat = format(res.group(5))
-            
-            seeders = meta_res.group(1)
-            leechers = meta_res.group(2)
-            file_size = meta_res.group(3)
-
-            #A new alias name is stored if it has not been detected yet
-            
-            anime_alias_obj, created = AnimeAlias.objects.get_or_create(
-                title = animeName,
-                defaults = {
-                    'anime' : Anime.get_unknown_placeholder()
-                }
-            )
-            
-            animeObj = anime_alias_obj.anime;
-
-            if animeObj.official_title != Anime.UNKNOWN_ANIME:
-
-                if (Torrent.objects.filter(url=url).exists()):
-                    print ("torrent already exist: " + torrent_name)
-
-                else:
-                    info_hash = get_torrent_info_hash(torrent_link)
-                    torrentObj = Torrent.objects.create(
-                            url           =   url,
-                            torrent_name  =   torrent_name,
-                            title         =   anime_alias_obj,
-                            episode       =   episode,
-                            fansub        =   fansub,
-                            quality       =   quality,
-                            vidFormat     =   vidFormat,
-                            seeders       =   seeders,
-                            leechers      =   leechers,
-                            file_size     =   file_size,
-                            infoHash      =   info_hash
-                    )
-                    
-                    print ("torrent for " + str(torrentObj) + ": " + torrent_name +" added")
-                    num_created += 1
-
-                    # torrent_arrived(torrentObj)
-            
-        except:
-            print('Error at: ' + item.get_text())
-            print('with error: ' + str(sys.exc_info()) + '\n')
-
-    print 'Crawl completed: ', num_created, " torrent(s) created."
+    print 'Crawl completed'
 
     return num_rows
     
