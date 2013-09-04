@@ -44,6 +44,7 @@ class AnimeAdmin(admin.ModelAdmin):
 class AnimeAliasAdmin(admin.ModelAdmin):
     list_display = ('title', 'anime', 'do_initialize', 'is_initialized')
     search_fields = ('title',)
+    readonly_fields = ('is_initialized',)
 
     inlines = [
         TorrentsInline

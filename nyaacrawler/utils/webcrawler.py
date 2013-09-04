@@ -5,6 +5,7 @@ from bs4 import BeautifulSoup
 
 from hashlib import sha1
 import bencode
+import datetime
 
 import urllib
 import urllib2
@@ -208,3 +209,32 @@ def crawl_page(url, concurrent=False):
 
     return num_rows
     
+def crawl_season_list(season=""):
+    """
+    Scrapes seasonal anime chart for new Anime
+    """
+    BASE_URL = "http://anichart.net/"
+    
+    if season not in ["spring", "summer", "fall", "winter"]:
+        month = int(datetime.datetime.now().strftime("%m"))
+
+        if month >= 3 and month < 6:
+            season = "spring"
+        elif month >= 6 and month < 9:
+            season = "summer"
+        elif month >= 9 and month < 12:
+            season = "fall"
+        else:
+            season = "winter"
+    
+    c=urllib2.urlopen(BASE_URL + season)
+    soup=BeautifulSoup(c.read())
+    anime_list = soup.find_all("div", "anime_info")
+    
+    for anime in anime_list:
+        title = anime.find("div", "title").text.strip()
+        if not (AnimeAlias.objects.filter(title=title).exists()):
+            anime_obj = Anime.objects.create(official_title=title, image=anime.find("img", "thumb").get("src"))
+            AnimeAlias.objects.create(anime=anime_obj, title=title)
+        else:
+            print("Anime: " + title + " already exist in database!")
