@@ -1,5 +1,6 @@
 from nyaacrawler.models import Anime, Torrent, AnimeAlias
 from nyaacrawler.utils import emailSender
+from django.conf import settings
 
 from bs4 import BeautifulSoup
 
@@ -10,12 +11,17 @@ import urllib
 import urllib2
 import re
 import sys
+import time
 
 #url parameters - subject to change
 BASE_URL = 'http://www.nyaa.se/'
 ENGLISH_TRANSLATED = '1_37'
 TRUSTED_ONLY = 2
+DEFAULT_RSS_DATE_FORMAT = '%a, %d %b %Y %H:%M:%S +0000'
+ROWS_PER_PAGE = 100
 
+INITIAL_CRAWL = 'init'
+INCREMENTAL_CRAWL = 'incr'
 
 def torrent_arrived(torrent):
     """
@@ -79,15 +85,28 @@ def crawl_anime():
     Scapes the front page of nyaa:
     an incremental crawl of torrents from nyaa.se
     """
-    #url to crawl
-    query_parameters = {
-        'page' : 'rss',
-        'cats' : ENGLISH_TRANSLATED,
-        'filter' : TRUSTED_ONLY,
-    }
+    continue_crawl = True
+    offset = 1
+    
+    rss_datetime_file = open(settings.RSS_FETCH_DATETIME_PATH, 'r+')
+    rss_datetime = rss_datetime_file.read().strip()
+    last_crawled_time = time.strptime(rss_datetime, DEFAULT_RSS_DATE_FORMAT)
+    rss_datetime_file.close()
 
-    url = BASE_URL + '?' + urllib.urlencode(query_parameters)
-    crawl_page(url)
+    while (continue_crawl):
+        
+        #url to crawl
+        query_parameters = {
+            'page' : 'rss',
+            'cats' : ENGLISH_TRANSLATED,
+            'filter' : TRUSTED_ONLY,
+            'offset' : offset
+        }
+
+        url = BASE_URL + '?' + urllib.urlencode(query_parameters)
+        continue_crawl = crawl_page(url, INCREMENTAL_CRAWL, last_crawled_time)
+
+        offset += 1
 
 def crawl_specific_anime(anime_name):
     """
@@ -100,15 +119,15 @@ def crawl_specific_anime(anime_name):
 
         query_parameters = {
             'page' : 'rss',
-            'cats' : ENGLISH_TRANSLATED, 
+            'cats' : ENGLISH_TRANSLATED,
+            'filter' : TRUSTED_ONLY,
             'term' : anime_name,
             'offset' : offset
         }
 
         url = BASE_URL +'?'+ urllib.urlencode(query_parameters)
-        num_rows = crawl_page(url, concurrent=True)
+        continue_crawl = crawl_page(url, INITIAL_CRAWL)
 
-        continue_crawl = num_rows > 0
         offset += 1
 
 def parse_row(title_regex, meta_regex, item):
@@ -117,7 +136,7 @@ def parse_row(title_regex, meta_regex, item):
         url = item.guid.text
         torrent_link = item.link.text
         meta = item.description.text
-
+        
         # extract data after some normalization
         res = title_regex.match(torrent_name.replace('_', ' '))
         meta_res = meta_regex.match(meta)
@@ -175,11 +194,13 @@ def parse_row(title_regex, meta_regex, item):
         print('Error at: ' + item.get_text())
         print('with error: ' + str(sys.exc_info()) + '\n')
 
-def crawl_page(url, concurrent=False):
+def crawl_page(url, crawl_type, stop_at=None):
     """
     Scapes a specific nyaa.se page
     returns the number of rows
     """
+    continue_crawl = True
+    
     print ("Scraping page... " + url)
 
     title_regex = re.compile(get_title_regex_string())
@@ -192,7 +213,8 @@ def crawl_page(url, concurrent=False):
     record_list = soup.find_all('item')
     num_rows = len(record_list)
 
-    if concurrent:
+    if crawl_type == INITIAL_CRAWL:
+    
         import threading
         threads = [threading.Thread(target=parse_row, args=(title_regex, meta_regex, item)) for item in record_list]
         for t in threads:
@@ -200,11 +222,36 @@ def crawl_page(url, concurrent=False):
         for t in threads:
             t.join()
 
-    else:
+    else: #INCREMENTAL_CRAWL
+        print "starting incremental crawl..."
+        assert (stop_at is not None)
+
+        #update the latest time crawled
+        first_item = record_list[0]
+        latest_time_added_string = first_item.pubDate.text
+        
+        rss_datetime_file = open(settings.RSS_FETCH_DATETIME_PATH, 'r+')
+        rss_datetime_file_time = time.strptime(rss_datetime_file.read().strip(), DEFAULT_RSS_DATE_FORMAT)
+        rss_datetime_file.close()
+
+        if (time.strptime(latest_time_added_string, DEFAULT_RSS_DATE_FORMAT) > rss_datetime_file_time):
+            rss_datetime_file = open(settings.RSS_FETCH_DATETIME_PATH, 'w')
+            rss_datetime_file.write(latest_time_added_string)
+            rss_datetime_file.close()
+    
         for item in record_list:
+            time_added_string = item.pubDate.text
+            time_added = time.strptime(time_added_string, DEFAULT_RSS_DATE_FORMAT)
+
+            #if the item's time if before the last crawled time, then stop
+            if (time_added <= stop_at):
+                continue_crawl = False
+                break
+
+            print "parsing... "+ item.title.text
             parse_row(title_regex, meta_regex, item)
+        
+    continue_crawl = continue_crawl and num_rows == ROWS_PER_PAGE
 
     print 'Crawl completed'
-
-    return num_rows
-    
+    return continue_crawl
