@@ -6,6 +6,7 @@ from bs4 import BeautifulSoup
 
 from hashlib import sha1
 import bencode
+import datetime
 
 import urllib
 import urllib2
@@ -164,12 +165,15 @@ def parse_row(title_regex, meta_regex, item):
             }
         )
         
+        if (created):
+            print "INFO: new alias name for unknown anime: ", anime_alias_obj.title, "has been added."
+
         animeObj = anime_alias_obj.anime;
 
         if animeObj.official_title != Anime.UNKNOWN_ANIME:
 
             if (Torrent.objects.filter(url=url).exists()):
-                print ("torrent already exist: " + torrent_name)
+                print ("INFO: torrent already exist: " + torrent_name)
             else:
                 info_hash = get_torrent_info_hash(torrent_link)
                 torrentObj = Torrent.objects.create(
@@ -189,6 +193,8 @@ def parse_row(title_regex, meta_regex, item):
                 print ("torrent for " + str(torrentObj) + ": " + torrent_name +" added")
 
                 # torrent_arrived(torrentObj)
+        else:
+           print "INFO: alias for unknown anime: ", anime_alias_obj.title, " skipped"
 
     except:
         print('Error at: ' + item.get_text())
@@ -254,4 +260,48 @@ def crawl_page(url, crawl_type, stop_at=None):
     continue_crawl = continue_crawl and num_rows == ROWS_PER_PAGE
 
     print 'Crawl completed'
+
     return continue_crawl
+    
+def crawl_season_list(season=""):
+    """
+    Scrapes seasonal anime chart for new Anime
+    """
+    BASE_URL = "http://anichart.net/"
+    
+    if season not in ["spring", "summer", "fall", "winter"]:
+        month = int(datetime.datetime.now().strftime("%m"))
+
+        if month >= 3 and month < 6:
+            season = "spring"
+        elif month >= 6 and month < 9:
+            season = "summer"
+        elif month >= 9 and month < 12:
+            season = "fall"
+        else:
+            season = "winter"
+    
+    c=urllib2.urlopen(BASE_URL + season)
+    soup=BeautifulSoup(c.read())
+    anime_list = soup.find_all("div", "anime_info")
+    
+    for anime in anime_list:
+        title = anime.find("div", "title").text.strip()
+        img_src = anime.find("img", "thumb").get("src")
+
+        if (AnimeAlias.objects.filter(title=title).exists()):
+            existing_alias = AnimeAlias.objects.get(title=title)
+            #the existing alias points to the 'UNKNOWN-ANIME'
+            #create a new anime and link the existing alias to it
+            if (existing_alias.anime.official_title == Anime.UNKNOWN_ANIME):
+                anime_obj = Anime.objects.create(official_title=title, image=img_src)
+                existing_alias.anime = anime_obj
+                existing_alias.save()
+                print("Anime: " + title + " parent modified")
+            else:
+                print("Anime: " + title + " already exist in database!")
+
+        else: 
+            #The alias name does not exist - create an anime object and set its alias to the given title.
+            anime_obj = Anime.objects.create(official_title=title, image=img_src)
+            AnimeAlias.objects.create(anime=anime_obj, title=title)
