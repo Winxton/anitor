@@ -109,10 +109,17 @@ body{
 	font-size:16px
 }
 
-	/*navigation default props*/
+/*navigation default props*/
 .nav-bar{
-	float:right; 
-	margin-right : -40px !important; 
+	position: absolute;
+    margin-top: 15px;
+    margin-left: 620px;
+}
+
+.ep-navigation ul .ep-number{
+    max-width: 111px;
+    min-width: 111px;
+    text-align: center;
 }
 
 /*navigation components default props*/
