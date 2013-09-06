@@ -267,7 +267,7 @@ def crawl_season_list(season=""):
     """
     Scrapes seasonal anime chart for new Anime
     """
-    BASE_URL = "http://anichart.net/"
+    CHART_BASE_URL = "http://anichart.net/"
     
     if season not in ["spring", "summer", "fall", "winter"]:
         month = int(datetime.datetime.now().strftime("%m"))
@@ -281,13 +281,15 @@ def crawl_season_list(season=""):
         else:
             season = "winter"
     
-    c=urllib2.urlopen(BASE_URL + season)
+    c=urllib2.urlopen(CHART_BASE_URL + season)
     soup=BeautifulSoup(c.read())
     anime_list = soup.find_all("div", "anime_info")
     
     for anime in anime_list:
         title = anime.find("div", "title").text.strip()
         img_src = anime.find("img", "thumb").get("src")
+        if "../" in img_src:
+            img_src = img_src.replace("../", CHART_BASE_URL)
 
         if (AnimeAlias.objects.filter(title=title).exists()):
             existing_alias = AnimeAlias.objects.get(title=title)
@@ -301,7 +303,7 @@ def crawl_season_list(season=""):
             else:
                 print("Anime: " + title + " already exist in database!")
 
-        else: 
+        else:
             #The alias name does not exist - create an anime object and set its alias to the given title.
             anime_obj = Anime.objects.create(official_title=title, image=img_src)
             AnimeAlias.objects.create(anime=anime_obj, title=title)

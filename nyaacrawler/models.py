@@ -38,15 +38,12 @@ class Anime(models.Model):
     def get_unknown_placeholder(cls):
         unknown_placeholder = cls.objects.get(official_title=Anime.UNKNOWN_ANIME)
         return unknown_placeholder
-    """
-    Myanimelist is down :(
 
     def save(self, *args, **kwargs):
         from nyaacrawler.utils import MyAnimeList 
         if not self.image:
             self.image = MyAnimeList.get_anime_image_url(self.official_title)
         super(Anime, self).save()
-    """
 
 class AnimeAlias(models.Model):
     """
