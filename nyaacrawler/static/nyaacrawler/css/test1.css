@@ -2,16 +2,17 @@ body{
 	background-color : #ECF0F1;
 	margin-top:100px;
 }
+
 .sub-wrapper{
-	width:800px; 
+	width:820px; 
 	margin-left: auto;
 	margin-right: auto;
 	height:229px;
 }
+
 .element-border{
 	border : 1px solid #BDC3C7; 
 	padding:10px 10px 10px 17px; 
-	margin-top:0; 
 	min-height:100px; 
 	width:800px; 
 	background:white;
@@ -20,27 +21,28 @@ body{
 }
 
 .image{
-	display:inline;
+	display:inline-block;
 }
 
 .image img{
 	border : 1px solid black; 
 	display:inline-block;
-	height:160px;
+	height:163px;
 	width:125px;
 }
 
 .data-container{
 	display:inline-block; 
 	vertical-align: top;  
-	margin-left:40px; 
-	max-width:620px;
+	margin-left:44px; 
+	min-width:620px;
 }
 
 .anime-title{
 	margin:0px; 
 	display:inline-block;
 	max-width:400px;
+	margin-bottom: 18px;
 }
 
 .anime-title:first-child{
@@ -50,6 +52,7 @@ body{
 .table-header{
 	padding-top:0px;
 	font-size:16px;
+	width:100%;
 }
 
 .table-data{
@@ -63,7 +66,7 @@ body{
 }
 
 .fansub-head{
-	width:112px;
+	width:114px;
 }
 
 .fansub{
@@ -71,7 +74,7 @@ body{
 }
 
 .quality-head{
-	width:78px;
+	width:82px;
 }
 
 .quality{
@@ -79,7 +82,7 @@ body{
 }
 
 .size-head{
-	width:96px;
+	width:98px;
 }
 
 .file-size{
@@ -87,7 +90,7 @@ body{
 }
 
 .seed-head{
-	width:67px;
+	width:71px;
 }
 
 .seed{
@@ -106,20 +109,17 @@ body{
 
 .ep-number{
 	padding-top:10px;
-	font-size:16px
+	font-size:16px;
+	width:97px;
 }
 
-/*navigation default props*/
+	/*navigation default props*/
 .nav-bar{
-	position: absolute;
-    margin-top: 15px;
-    margin-left: 620px;
-}
-
-.ep-navigation ul .ep-number{
-    max-width: 111px;
-    min-width: 111px;
-    text-align: center;
+	float:right !important; 
+	margin-right : -60px !important; 
+	margin-top: -10px;
+	height: 45px;
+	width : 244px;
 }
 
 /*navigation components default props*/
@@ -130,6 +130,10 @@ body{
 	border-radius: 6px !important;
 	box-shadow: none !important;
 	text-decoration:none !important;
+	margin-bottom: 0;
+}
+.nav-bar ul li.next{
+	/*margin-right: 14px !important;*/
 }
 
 /*navigation mouseover props*/
@@ -145,6 +149,80 @@ body{
 /* arrow props*/
 .nav-arrow{
 	text-decoration:none !important;
+	line-height: 0;
+}
+
+.select-block{
+	display: none;
+}
+
+.dropdown-inverse li.active > a, 
+.dropdown-inverse li.selected > a {
+	background : #2C3E50;
+	border : 0;
+	border-radius: 0;
+}
+
+.dropdown-inverse li > a, 
+.dropdown-inverse li > a {
+	border-radius: 0 !important;
+	padding-bottom: 6px !important;
+	padding-top: 5px !important;
+	margin : 0 !important;
+	background: none !important;
+}
+
+.ep-navigation ul li > a, 
+.ep-navigation ul li > span {
+	background: #2C3E50;
+	border : 0;
+}
+.dropdown-menu{
+	white-space: normal !important;
+	background-color: none;
+	min-width: 120px;
+	max-height: 205px !important;
+}
+
+.dropdown-arrow{
+	margin-right: 14px;
+}
+
+.dropdown-ep{
+	width:125px;
+}
+
+.btn-primary{
+	padding: 0;
+	background-color: #2C3E50 !important;
+	width : 103px !important;
+}
+
+.filter-option{
+	top:0 !important;
+	left:3px !important;
+	width : 107px;
+}
+
+.caret {
+	right: 8px !important;
+}
+
+.subscribe{
+	width:128px;
+	margin-right:40px;
+	float:right;
+	border-radius:0;
+	background-color:#c0392b !important;
+	opacity:0.7;
+	height:25px;
+	padding:0px;
+	margin-top: 8px;
+}
+
+.subscribe:hover{
+	background-color:#e74c3c !important;
+	opacity:1;
 }
 
 /*torrent and magnet buttons props*/
@@ -163,22 +241,6 @@ body{
 /*click torrent and magnet buttons props*/
 .magtor:active {
 	background-color: #16a085 !important;
-}
-
-.subscribe{
-	width:128px;
-	margin-right:-28px;
-	float:right;
-	border-radius:0;
-	background-color:#c0392b !important;
-	opacity:0.7;
-	height:25px;
-	padding:0px;
-}
-
-.subscribe:hover{
-	background-color:#e74c3c !important;
-	opacity:1;
 }
 
 #inline1{

@@ -1,21 +1,31 @@
 
+function bindScrollBar() {
+    $(".table-data").mCustomScrollbar({
+    scrollButtons:{
+            enable:true
+        },
+        theme:"dark-thick",
+    });
+    $(".dropdown-inverse").mCustomScrollbar({
+        theme:"light-thick",
+    });
+}
+
+
   (function($){
         $(window).load(function(){
-            $(".table-data").mCustomScrollbar({
-				scrollButtons:{
-						enable:true
-					},
-				autoHideScrollbar:true,
-				theme:"dark-thick",
-			});
+            bindScrollBar();
         });
     })(jQuery);
+
 	var animename;
+
 	$(document).ready(function(){
+        $("select").selectpicker({style: 'btn-primary', menuStyle: 'dropdown-inverse'});
 		$('.fancybox').fancybox();
 		var numfansub=0,fansubcnt=0,numquality=0;qualitycnt=0;
 		$('.subscribe').click(function() {
-			animename = $(this).parent('div').attr('id');
+			animename = $(this).parents('div').eq(3).attr('id');
 			$(".checkbox-all-quality").addClass("checked");
 			$(".checkbox-all-fansub").addClass("checked");
 			$('#fansub-list').empty();
@@ -82,7 +92,6 @@
 					$.fancybox.close();
 					setTimeout(function() {
 					$("#alert-success-private").fadeOut();
-      				
 					}, 2000);
 				}
 				else
@@ -117,8 +126,4 @@
 					qualitycnt=numquality;
 				}
 		});
-	});
-	
-	
-	
-	
+});
