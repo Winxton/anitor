@@ -41,7 +41,6 @@
     <input type="text" id="anime_search"/>
   
     {% for anime in animeList %}
-    {% if anime.current_episode > 0 %}
     <div class="sub-wrapper" id="{{ anime.pk }}">
         <div class="element-border">
             <div class="image">
@@ -95,7 +94,6 @@
             </div>
         </div>
     </div>
-    {% endif %}
     {% endfor %}
 
     <div id="inline1">
@@ -168,7 +166,7 @@
                             "<div class='sub-wrapper' id='2'>" +
                             "<div class='element-border'>" +
                                 "<div class='image'>" +
-                                    "<img src='/static/nyaacrawler/shigeki.jpg'/>" +
+                                    "<img src='" + ani_value['image'] + "'/>" +
                                 "</div>" +
                                 "<div class='data-container'>" +
                                     "<div class='anime-title'>" +

@@ -7,24 +7,26 @@ from django.http import HttpResponse, HttpResponseRedirect
 import json
 
 def index(request):
-	anime = Anime.objects.all().exclude(official_title=Anime.UNKNOWN_ANIME)
-
-	context = {'animeList': anime}
-	return render(request, 'index.html', context)
+    anime = Anime.get_active_anime()
+    
+    context = {'animeList': anime}
+    return render(request, 'index.html', context)
 
 def get_anime_list(request):
     search_string = request.GET.get('search')
 
     response = []
     
-    anime_list = Anime.objects.filter(official_title__icontains=search_string).exclude(official_title=Anime.UNKNOWN_ANIME)
+    anime_list = Anime.get_active_anime().filter(official_title__icontains=search_string)
     
     for anime in anime_list:
         animeObj = {}
         animeObj['pk'] = anime.pk
         animeObj['title'] = anime.official_title
         animeObj['torrents'] = []
+        animeObj['image'] = anime.image
         
+
         torrent_list = anime.latest_episodes()
         for torrent in torrent_list:
             torrentObj = {}

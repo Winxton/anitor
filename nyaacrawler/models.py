@@ -26,7 +26,6 @@ class Anime(models.Model):
             )
 
     def current_episode(self):
-        #ex: ["max_episode" : num]
         episode = Torrent.objects.filter(
                 title__anime=self
             ).aggregate(
@@ -38,6 +37,11 @@ class Anime(models.Model):
     def get_unknown_placeholder(cls):
         unknown_placeholder = cls.objects.get(official_title=Anime.UNKNOWN_ANIME)
         return unknown_placeholder
+        
+    @classmethod
+    def get_active_anime(cls):
+        return Anime.objects.filter(anime_aliases__torrents__isnull=False).distinct()
+    
     """
     Myanimelist is down :(
 

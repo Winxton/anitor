@@ -11,10 +11,9 @@ function bindScrollBar() {
     });
 }
 
-
   (function($){
         $(window).load(function(){
-            bindScrollBar();
+            //bindScrollBar();
         });
     })(jQuery);
 
