@@ -216,7 +216,7 @@
                                     $.each(
                                         torrents,
                                         function(tor_key, tor_val) {
-                                    html+="<tr> " +
+                                            html+="<tr> " +
                                                 "<td class='fansub'>";
                                                 if(tor_val['fansub']!=stringtest)
                                                     html+=(tor_val['fansub']);
@@ -234,37 +234,11 @@
                                                 html+=(tor_val['leechers'])
                                                 html+="</td>" +
                                                 "<td class='magnet'><a href='#fakelink' class='btn btn-block magtor'>Magnet</a></td>" +
-                                                "<td class='torrent'><a href='#fakelink' class='btn btn-block magtor'>Torrent</a></td>" +
-                                            "</tr>" ;
+                                                "<td class='torrent'><a href='"+tor_val['torrent_link']+"' class='btn btn-block magtor'>Torrent</a></td>";
+                                            html += "</tr>" ;
                                             stringtest=(tor_val['fansub']);
-                                        }
-                                        );
-$.each(
-                                        torrents,
-                                        function(tor_key, tor_val) {
-                                    html+="<tr> " +
-                                                "<td class='fansub'>";
-                                                if(tor_val['fansub']!=stringtest)
-                                                    html+=(tor_val['fansub']);
-                                                html+= "</td>" +
-                                                "<td class='quality'>";
-                                                html+=(tor_val['quality']);
-                                                html+="</td>" +
-                                                "<td class='file-size'>";
-                                                html+=(tor_val['file_size']);
-                                                html+="</td>" +
-                                                "<td class='seed'>";
-                                                html+=(tor_val['seeders']);
-                                                html+="</td>" +
-                                                "<td class='leach'>";
-                                                html+=(tor_val['leechers'])
-                                                html+="</td>" +
-                                                "<td class='magnet'><a href='#fakelink' class='btn btn-block magtor'>Magnet</a></td>" +
-                                                "<td class='torrent'><a href='#fakelink' class='btn btn-block magtor'>Torrent</a></td>" +
-                                            "</tr>" ;
-                                            stringtest=(tor_val['fansub']);
-                                        }
-                                        );
+                                        });
+
                                     html+="</table>"+
                                     "</div>" +
                                 "</div>" +
