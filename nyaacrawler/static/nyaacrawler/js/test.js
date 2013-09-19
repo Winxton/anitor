@@ -10,10 +10,9 @@ function bindScrollBar() {
         theme:"light-thick",
     });
 }
-
   (function($){
         $(window).load(function(){
-            //bindScrollBar();
+            bindScrollBar();
         });
     })(jQuery);
 
@@ -126,3 +125,4 @@ function bindScrollBar() {
 				}
 		});
 });
+

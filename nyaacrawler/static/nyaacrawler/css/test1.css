@@ -163,6 +163,10 @@ body{
 	border-radius: 0;
 }
 
+.mCSB_container{
+	margin-right: 0px;
+}
+
 .dropdown-inverse li > a, 
 .dropdown-inverse li > a {
 	border-radius: 0 !important;
