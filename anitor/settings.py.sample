@@ -21,6 +21,11 @@ DATABASES = {
     }
 }
 
+RSS_FETCH_DATETIME_PATH=os.path.join(
+     os.path.abspath(os.path.dirname(__file__)),
+     'logs/rss_fetch_datetime'
+)
+
 EMAIL_HOST = 'smtp.domain.com'
 EMAIL_PORT = 26
 EMAIL_HOST_USER = 'username'

@@ -31,7 +31,7 @@ class Anime(models.Model):
             ).aggregate(
                 max_episode=Max('episode')
             )['max_episode']
-        return 0 if episode is None else episode
+        return 0 if episode is None else int(episode)
         
     @classmethod
     def get_unknown_placeholder(cls):
@@ -42,15 +42,11 @@ class Anime(models.Model):
     def get_active_anime(cls):
         return Anime.objects.filter(anime_aliases__torrents__isnull=False).distinct()
     
-    """
-    Myanimelist is down :(
-
     def save(self, *args, **kwargs):
         from nyaacrawler.utils import MyAnimeList 
         if not self.image:
             self.image = MyAnimeList.get_anime_image_url(self.official_title)
         super(Anime, self).save()
-    """
 
 class AnimeAlias(models.Model):
     """

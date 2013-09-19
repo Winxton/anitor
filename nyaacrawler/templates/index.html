@@ -57,8 +57,10 @@
                     <li class="ep-number">
                         <div class="dropdown-ep">
                             <select name="Episode" class="select-block">
-                            <option value="1">Episode 20</option>
-                            <option value="2">Episode 2</option>
+                                {% for i in anime.current_episode|select_options_range %}
+                                    <option value="{{ i }}">Episode {{ i }}</option>
+                                {% endfor %}
+                                    <option value="{{ anime.current_episode }}" selected>Episode {{ anime.current_episode }}</option>
                             </select>
                         </div>
                     </li>
@@ -142,6 +144,7 @@
     </div> 
     </div>
   </body>
+
     <script type="text/javascript" src="{% static 'nyaacrawler/js/bootstrap.min.js' %}"></script>
     <script type="text/javascript" src="{% static 'nyaacrawler/js/bootstrap-select.js' %}"></script>
     <script type="text/javascript" src="{% static 'nyaacrawler/js/application.js' %}"></script>
