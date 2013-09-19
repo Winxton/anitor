@@ -56,8 +56,10 @@
                     <li class="ep-number">
                         <div class="dropdown-ep">
                             <select name="Episode" class="select-block">
-                            <option value="1">Episode 20</option>
-                            <option value="2">Episode 2</option>
+                                {% for i in anime.current_episode|select_options_range %}
+                                    <option value="{{ i }}">Episode {{ i }}</option>
+                                {% endfor %}
+                                    <option value="{{ anime.current_episode }}" selected>Episode {{ anime.current_episode }}</option>
                             </select>
                         </div>
                     </li>
@@ -177,8 +179,8 @@
                                         "<li class='previous'><a href='#fakelink' class='fui-arrow-left nav-arrow'></a></li>" +
                                         "<li class='ep-number'><div class='dropdown-ep'>"+
                                             "<select name='Episode' class='select-block'>"+
-                                            "<option value='1'>Episode 20</option>"+
-                                            "<option value='2'>Episode 2</option>"+
+                                                "<option value='1'>Episode 20</option>"+
+                                                "<option value='2'>Episode 2</option>"+
                                             "</select>"+
                                             "<div class='btn-group select select-block'>"+
                                                 "<i class='dropdown-arrow dropdown-arrow-inverse'></i>"+
@@ -188,13 +190,14 @@
                                                 "<span class='caret'></span>"+
                                                 "</button>"+
                                                 "<ul class='dropdown-menu dropdown-inverse mCustomScrollbar _mCS_2' role='menu' + style='max-height: 552px; overflow-y:auto; min-height: 75px;overflow-x:hidden'>"+
-                                                "<div class='mCustomScrollBox mCS-light-thick' id='mCSB_2' style='position: relative; height: 100%; overflow: hidden; max-width: 100%; max-height: 205px;'>"+
+                                                "<div class='mCustomScrollBox mCS-light-thick' id='mCSB_2' style='position: relative; height: 100%; overflow: hidden; max-width: 100%; max-height: 205px;'>" +
                                                 "<div class='mCSB_container mCS_no_scrollbar' style='position: relative; top: 0px;'>"+
                                                 "<li rel='0' class='selected'><a tabindex='-1' href='#' class=''><span class='pull-left'>Episode  20</span></a></li>"+
                                                 "<li rel='1'><a tabindex='-1' href='#' class=''><span class='pull-left'>Episode 2</span></a></li></div><div class='mCSB_scrollTools' style='position: absolute; display: none;'>"+
                                                 "<div class='mCSB_draggerContainer'><div class='mCSB_dragger' style='position: absolute; top: 0px;' oncontextmenu='return false;'>"+
                                                 "<div class='mCSB_dragger_bar' style='position:relative;'></div></div><div class='mCSB_draggerRail'+></div></div></div></div></ul></div>"+
-                                        "</div></li>" +
+                                            "</div>" + 
+                                        "</li>" +
                                         "<li class='next'><a href='#fakelink' class='fui-arrow-right nav-arrow'></a></li>" +
                                     "</ul>" +
                                     "<a href='#inline1' class='btn btn-block btn-primary subscribe fancybox'>Subscribe</a>" +
@@ -246,7 +249,7 @@
                             "</div>";
 
                             $("#arrival").append(html);
-                            //bindScrollBar();
+                            bindScrollBar();
                     }
                 );
             },
