@@ -12,34 +12,25 @@ def index(request):
     context = {'animeList': anime}
     return render(request, 'index.html', context)
 
-def get_anime_list(request):
-    search_string = request.GET.get('search')
-
+def get_torrents_for_anime_episode(request):
+    anime_id = request.GET.get('id')
+    episode = request.GET.get('episode')
+    
+    torrent_list = Torrent.objects.filter(
+        episode=episode,
+        title__anime__pk=anime_id
+    ).order_by('fansub')
+    
     response = []
-    
-    anime_list = Anime.get_active_anime().filter(official_title__icontains=search_string)
-    
-    for anime in anime_list:
-        animeObj = {}
-        animeObj['pk'] = anime.pk
-        animeObj['title'] = anime.official_title
-        animeObj['torrents'] = []
-        animeObj['image'] = anime.image
-        
-
-        torrent_list = anime.latest_episodes()
-        for torrent in torrent_list:
-            torrentObj = {}
-            torrentObj['fansub'] = torrent.fansub
-            torrentObj['quality'] = torrent.quality
-            torrentObj['seeders'] = torrent.seeders
-            torrentObj['leechers'] = torrent.leechers
-            torrentObj['torrent_link'] = torrent.url
-            torrentObj['file_size'] = torrent.file_size
-
-            animeObj['torrents'].append(torrentObj)
-
-        response.append(animeObj)
+    for torrent in torrent_list:
+        torrentObj = {}
+        torrentObj['fansub'] = torrent.fansub
+        torrentObj['quality'] = torrent.quality
+        torrentObj['torrent_link'] = torrent.url
+        torrentObj['seeders'] = torrent.seeders
+        torrentObj['leechers'] = torrent.leechers
+        torrentObj['file_size'] = torrent.file_size
+        response.append(torrentObj)
 
     return HttpResponse(json.dumps(response), content_type='application/json')
 

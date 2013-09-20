@@ -5,6 +5,6 @@ from nyaacrawler.views import *
 urlpatterns = patterns('',
     url(r'^subscribe/$', subscribe),
     url(r'^unsubscribe/(?P<unsubscribe_key>\w+)/$', unsubscribe),
-    url(r'^search/get-anime-list/$', get_anime_list, name="animeList"),
+    url(r'^search/get-torrent-list/$', get_torrents_for_anime_episode),
     url(r'^$', index),
 )
