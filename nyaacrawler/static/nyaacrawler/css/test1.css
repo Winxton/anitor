@@ -137,10 +137,10 @@ body{
 }
 
 /*navigation mouseover props*/
-.nav-bar ul li > a:hover,
-.nav-bar ul li > span:hover,
-.nav-bar ul li > a:focus,
-.nav-bar ul li > span:focus {
+.nav-arrow:hover,
+.nav-arrow:hover,
+.nav-arrow:focus,
+.nav-arrow:focus {
 	background-color: #4E6174 !important;
 	border-color: #1abc9c !important;
 	color: #ffffff !important;
@@ -184,8 +184,8 @@ body{
 .dropdown-menu{
 	white-space: normal !important;
 	background-color: none;
-	min-width: 120px;
-	max-height: 205px !important;
+	min-width: 100px;
+	max-height: 165px !important;
 }
 
 .dropdown-arrow{

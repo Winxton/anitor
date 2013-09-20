@@ -44,12 +44,13 @@ function bindScrollBar() {
 			$('#quality-list').empty();
 			$("#"+animename+ " .quality").each(function(){
 			if($(this).text()){
+                if($(this).text() != "None"){
 				var label = $('<label class="checkbox checked checkbox-quality">').text($(this).text());
 				var input = $('<input class="checkbox-option-quality" type="checkbox" data-toggle="checkbox" checked=""><span class="icons"><span class="first-icon fui-checkbox-unchecked"></span><span class="second-icon fui-checkbox-checked"></span></span>').attr({});
 				input.appendTo(label);
 				$('#quality-list').append(label);
 				numquality+=1;
-			}
+			}}
 			});
 			qualitycnt=numquality;
 			$(".checkbox-fansub").click(function(){
@@ -124,5 +125,33 @@ function bindScrollBar() {
 					qualitycnt=numquality;
 				}
 		});
+
+        $(".subscribe-final").click(function(){
+            
+        });
+
+        $(".select-block").change(function(){
+             var epno = $(this).val();
+             var anid = $(this).closest('.sub-wrapper').attr("id");
+             $("#"+anid).find('.table-data').empty();
+            /* var html = '<table class="anime-data>"'+
+                        {% for torrent in anime.latest_episodes %}+
+                        '<tr>'+
+                        {% ifchanged torrent.fansub %}+
+                        '<td class="fansub">'{{ torrent.fansub }}'</td>'+
+                        {% else %}+
+                        '<td class="fansub"></td>'+
+                        {% endifchanged %}+
+                        '<td class="quality">'{{ torrent.quality }}'</td>'+
+                        '<td class="file-size">'{{ torrent.file_size }}'</td>'+
+                        '<td class="seed">'{{ torrent.seeders }}'</td>'+
+                        '<td class="leach">'{{ torrent.leechers }}'</td>'+
+                        '<td class="magnet"><a href="'{{ torrent|magnet_link }}'" class="btn btn-block magtor">Magnet</a></td>'+
+                        '<td class="torrent"><a href="'{{ torrent.url }}'" class="btn btn-block magtor">Torrent</a></td>'+
+                        '</tr>'+
+                        {% endfor %} +
+                        '</table>';
+             $(".table-data").append(html);*/
+        });
 });
 
