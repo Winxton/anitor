@@ -31,8 +31,12 @@ def torrent_arrived(torrent):
     matched_subscriptions = torrent.get_matching_subscriptions()
 
     for subscription in matched_subscriptions:
-        message_parameters = [torrent.episode, unicode(torrent.anime)]
-        emailSender.send_notification_email (subscription.get_email(), message_parameters)
+        subscription_parameters['episode'] = torrent.episode
+        subscription_parameters['anime_name'] = unicode(torrent.anime)
+        subscription_parameters['email'] = subscription.get_email()
+        subscription_parameters['unsubscribe_key'] = subscription.get_unsubscribe_key
+        subscription_parameters['torrent_url'] = torrent.url
+        emailSender.send_notification_email (subscription_parameters)
         subscription.increment_episode()
         #subscription.save()
 

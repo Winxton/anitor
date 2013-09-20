@@ -132,15 +132,15 @@ class Subscription(models.Model):
         max_length=32,
         default=os.urandom(16).encode('hex')
     )
-
+    
     def __unicode__(self):
         return self.user.email+" - "+self.anime.official_title
     def get_email(self):
         return self.user.email
     def increment_episode(self):
         self.current_episode += 1
-    def __unicode__(self):
-        return self.user.email+" - "+self.anime.official_title
+    def get_unsubscribe_key(self):
+        return self.unsubscribe_key
 
 class UserForm(ModelForm):
     class Meta:
