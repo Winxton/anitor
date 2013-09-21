@@ -32,13 +32,13 @@ def torrent_arrived(torrent):
 
     for subscription in matched_subscriptions:
         subscription_parameters['episode'] = torrent.episode
-        subscription_parameters['anime_name'] = unicode(torrent.anime)
+        subscription_parameters['anime_name'] = torrent.title.anime.official_title
         subscription_parameters['email'] = subscription.get_email()
-        subscription_parameters['unsubscribe_key'] = subscription.get_unsubscribe_key
+        subscription_parameters['unsubscribe_key'] = subscription.get_unsubscribe_key()
         subscription_parameters['torrent_url'] = torrent.url
         emailSender.send_notification_email (subscription_parameters)
         subscription.increment_episode()
-        #subscription.save()
+        subscription.save()
 
 def get_title_regex_string():
     #example: [fansub group] anime name - 05 [720p].mkv
@@ -224,7 +224,6 @@ def crawl_page(url, crawl_type, stop_at=None):
     num_rows = len(record_list)
 
     if crawl_type == INITIAL_CRAWL:
-    
         import threading
         threads = [threading.Thread(target=parse_row, args=(title_regex, meta_regex, item)) for item in record_list]
         for t in threads:

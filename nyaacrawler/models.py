@@ -89,37 +89,9 @@ class Torrent(models.Model):
             Q (fansubs__contains=(self.fansub)) | Q(fansubs='all'),
             Q (current_episode=self.episode-1)
         )
-
-
-class User(models.Model):
-    email = models.EmailField()
-    created = models.DateTimeField(auto_now_add=True)
-    
-    #used when user is registered
-    registration_activation_key = models.CharField(
-        max_length=32,
-        default=os.urandom(16).encode('hex')
-    )
-    #user's email has been validated - all following subscription will not need to be verified
-    confirmed_subscription = models.BooleanField()
-    #user is registered
-    confirmed_registered = models.BooleanField()
-
-    def __unicode__(self):
-        return self.email
-    def is_registered(self):
-        return True == self.confirmed_registered
-    def set_registered(self):
-        self.confirmed_registered = True
-    def has_no_subscriptions(self):
-        return self.get_num_subscriptions() == 0
-    def get_num_subscriptions(self):
-        return self.subscriptions.count()
-    def get_subscriptions(self):
-        return self.subscriptions.all()
         
 class Subscription(models.Model):
-    user = models.ForeignKey(User, related_name="subscriptions")
+    email = models.EmailField()
     anime = models.ForeignKey(Anime, related_name="subscriptions")
     current_episode = models.FloatField()
     qualities = models.CharField(max_length=30)
@@ -130,15 +102,18 @@ class Subscription(models.Model):
     )
     
     def __unicode__(self):
-        return self.user.email+" - "+self.anime.official_title
+        return self.email+" - "+self.anime.official_title
+    @classmethod
+    def get_subscriptions_for_email(cls, email):
+        return Subscription.objects.filter(email=email)
     def get_email(self):
-        return self.user.email
+        return self.email
     def increment_episode(self):
         self.current_episode += 1
     def get_unsubscribe_key(self):
         return self.unsubscribe_key
 
-class UserForm(ModelForm):
+class SubscriptionForm(ModelForm):
     class Meta:
-        model = User
-        fields = ['email']
+        model = Subscription
+        fields = ['email','anime','current_episode','qualities','fansubs']
