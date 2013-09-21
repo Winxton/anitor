@@ -95,30 +95,20 @@ class User(models.Model):
     email = models.EmailField()
     created = models.DateTimeField(auto_now_add=True)
     
-    #used if first subscribed and not registered
-    subscription_activation_key = models.CharField(
-        max_length=32,
-        default=os.urandom(16).encode('hex')
-    )
-    
     #used when user is registered
     registration_activation_key = models.CharField(
         max_length=32,
         default=os.urandom(16).encode('hex')
     )
     #user's email has been validated - all following subscription will not need to be verified
-    confirmed_email = models.BooleanField()
+    confirmed_subscription = models.BooleanField()
     #user is registered
     confirmed_registered = models.BooleanField()
 
     def __unicode__(self):
         return self.email
-    def has_confirmed_email(self):
-        return True == self.confirmed_email
     def is_registered(self):
         return True == self.confirmed_registered
-    def set_confirmed_email(self):
-        self.confirmed_email = True
     def set_registered(self):
         self.confirmed_registered = True
     def has_no_subscriptions(self):
