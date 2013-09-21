@@ -3,6 +3,7 @@ from django.shortcuts import render
 from django.views.decorators.http import require_http_methods
 from nyaacrawler.models import *
 from django.http import HttpResponse, HttpResponseRedirect
+from nyaacrawler.utils.emailSender import send_registration_confirmation_email
 
 import json
 
@@ -34,7 +35,6 @@ def get_torrents_for_anime_episode(request):
 
     return HttpResponse(json.dumps(response), content_type='application/json')
 
-@require_http_methods(["POST"])
 def subscribe(request):
     """
     Saves a subscription given the email and a
@@ -52,9 +52,14 @@ def subscribe(request):
         user_form = UserForm(email_data)
         
         if (user_form.is_valid()):
+            
+            user, created = User.objects.get_or_create(**user_form.cleaned_data)
 
-            user = user_form.save()
-            anime = Anime.objects.get(pk=subscription_request['key'])
+            anime = Anime.objects.get(pk=subscription_request['anime_key'])
+
+            #send subscription confirmation email
+            if created:
+                send_registration_confirmation_email(anime, user)
 
             subscription = Subscription(
                 user = user,
@@ -77,15 +82,31 @@ def subscribe(request):
     json_result = json.dumps(results)
     return HttpResponse(json_result, content_type='application/json')
 
+def confirm_email(request, subscription_activation_key):
+    """
+    Confirmation that the email belongs to a valid user (i.e not spam)
+    """
+    try:
+        user = User.objects.get(subscription_activation_key=subscription_activation_key)
+        user.set_confirmed_email()
+        user.save()
+        
+        #update the current episode for subscription
+        subscriptions = user.get_subscriptions()
+        for subscription in subscriptions:
+            subscription.current_episode = subscription.anime.current_episode()
+            subscription.save()
+        
+        #TODO: template for unsubscribe, show current subscriptions
+        return HttpResponse("Email has been confirmed")
+
+    except Subscription.DoesNotExist: 
+        return HttpResponseRedirect('/')
 
 def unsubscribe(request, unsubscribe_key):
     try:
         subscription = Subscription.objects.get(unsubscribe_key=unsubscribe_key)
         subscription.delete()
-        
-        user = subscription.user
-        if user.has_no_subscriptions():
-            user.delete()
         
         #TODO: template for unsubscribe
         return HttpResponse("Unsubscribed")

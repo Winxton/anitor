@@ -4,9 +4,12 @@ from django.conf import settings
 from nyaacrawler.models import Anime, Torrent, Subscription
 from anitor import settings
 
-def send_registration_confirmation_email(anime):
+def send_registration_confirmation_email(anime, user):
     subject = "Anitor Subscription"
-    body = "Hello! You have subscribed to " + anime
+    body = "Hello! You have subscribed to " + anime.official_title + ". "
+    body += "Since this is your first subscription, please confirm your email here: "
+    body += "http://<TBD>.<TBD>/confirm-subscription/"+user.subscription_activation_key
+    
     """
     TODO: email message parameters
     """

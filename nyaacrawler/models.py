@@ -37,7 +37,7 @@ class Anime(models.Model):
     def get_unknown_placeholder(cls):
         unknown_placeholder = cls.objects.get(official_title=Anime.UNKNOWN_ANIME)
         return unknown_placeholder
-        
+
     @classmethod
     def get_active_anime(cls):
         return Anime.objects.filter(anime_aliases__torrents__isnull=False).distinct()
@@ -106,22 +106,28 @@ class User(models.Model):
         max_length=32,
         default=os.urandom(16).encode('hex')
     )
-    #user has been validated
-    confirmed_subscription = models.BooleanField()
+    #user's email has been validated - all following subscription will not need to be verified
+    confirmed_email = models.BooleanField()
     #user is registered
     confirmed_registered = models.BooleanField()
 
     def __unicode__(self):
         return self.email
-    def set_activated(self):
-        self.confirmed_subscription = True
+    def has_confirmed_email(self):
+        return True == self.confirmed_email
+    def is_registered(self):
+        return True == self.confirmed_registered
+    def set_confirmed_email(self):
+        self.confirmed_email = True
     def set_registered(self):
         self.confirmed_registered = True
     def has_no_subscriptions(self):
         return self.get_num_subscriptions() == 0
     def get_num_subscriptions(self):
         return self.subscriptions.count()
-
+    def get_subscriptions(self):
+        return self.subscriptions.all()
+        
 class Subscription(models.Model):
     user = models.ForeignKey(User, related_name="subscriptions")
     anime = models.ForeignKey(Anime, related_name="subscriptions")
