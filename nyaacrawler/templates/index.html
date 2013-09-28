@@ -118,24 +118,33 @@
         </div>
         <div id="quality-wrapper">
             <h4>Quality</h4>
-            <form>
+            <form class="quality-form">
                 <label class="checkbox checkbox-all-quality checked">
                     <input class="checkbox-option-all-quality" type="checkbox" checked="checked" data-toggle="checkbox">
                     Any
                 </label>
+                <label class="checkbox checkbox-quality checked" id="480p">
+                    <input class="checkbox-option-quality" type="checkbox" checked="checked" data-toggle="checkbox" >
+                    480p
+                </label>
+                <label class="checkbox checkbox-quality checked" id="720p">
+                    <input class="checkbox-option-quality" type="checkbox" checked="checked" data-toggle="checkbox" >
+                    720p
+                </label>
+                <label class="checkbox checkbox-quality checked" id="1080p">
+                    <input class="checkbox-option-quality" type="checkbox" checked="checked" data-toggle="checkbox" >
+                    1080p
+                </label>
                 <div id="quality-list">
                 </div>
             </form>
-        </div>
-        <br>
+        </div
+>        <br>
         <div id="email-wrapper">
             <form>
                 <h4><b>Email</b> : <input type="text" name="email" id="email-box"/>
                 <input type="submit" value="Subscribe" class="btn btn-block subscribe-final"/></h4>
             </form>
-        </div>
-        <div id="subscribe-wrapper">
-
         </div>
         <div class="alert alert-error" id="alert-error-private">
             <button type="button" class="close"></button>
