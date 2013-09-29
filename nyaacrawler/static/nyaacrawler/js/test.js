@@ -19,6 +19,53 @@ function bindScrollBar2() {
         theme:"dark-thick",
     });
 }
+
+function populate(epno,anid){
+      $("#"+anid).find('.table-data').remove();
+             var html='<div class="table-data"><table class="anime-data"></table</div>';
+             $(html).appendTo($("#"+anid).find('.data-container'));
+               html="";
+             $.get(
+                "/search/get-torrent-list/", 
+                 {id:anid,episode:epno},
+                  function(response) {
+                for (var i = 0 ; i<response.length; i++) {
+               html += '<tr>'+
+                        '<td class="fansub">';
+                        if(response[i-1]){
+                        if(response[i-1]['fansub']!=response[i]['fansub'])
+                        html+=response[i]['fansub'];
+                        }
+                        else{
+                            html+=response[i]['fansub'];
+                        }
+                        html+='</td>'+
+                        '<td class="quality">';
+                        html+=response[i]['quality'];
+                        html+='</td>'+
+                        '<td class="file-size">';
+                        html+=response[i]['file_size'];
+                        html+='</td>'+
+                        '<td class="seed">';
+                        html+=response[i]['seeders'];
+                        html+='</td>'+
+                        '<td class="leach">';
+                        html+=response[i]['leechers'];
+                        html+='</td>'+
+                        '<td class="magnet"><a href="test" class="btn btn-block magtor">';
+                       // html+=response[i]['fansub'];
+                        html+='Magnet</a></td>'+
+                        '<td class="torrent"><a href="test" class="btn btn-block magtor">';
+                        //html+=response[i]['torrent_link'];
+                        html+="Torrent</a></td>"+
+                        "</tr>";
+                        } 
+                        $(html).appendTo($("#"+anid).find('.anime-data'));
+                        bindScrollBar2();
+                        },
+                "json"
+                );
+}
   (function($){
         $(window).load(function(){
             bindScrollBar();
@@ -96,17 +143,6 @@ function bindScrollBar2() {
 			});
 		});	
 			var success=true;
-			$(".subscribe-final").click(function(){	
-				if(success==true){
-					$('<div class="alert alert-success" id="alert-success-private"> <button type="button" class="close"></button> <strong>Congrats!</strong> You have successfully subscribed to this anime.</div>').appendTo('#'+animename);
-					$.fancybox.close();
-					setTimeout(function() {
-					$("#alert-success-private").fadeOut();
-					}, 2000);
-				}
-				else
-				$("#alert-error-private").css("display","block");
-			});
 		$(".checkbox-all-fansub").click(function() {
 			if($(".checkbox-all-fansub").hasClass("checked")){	
 				$(".checkbox-option-fansub").removeAttr("checked");
@@ -149,61 +185,38 @@ function bindScrollBar2() {
                 if($(this).hasClass("checked"))
                     fansub.push($(this).text());
             });
-            subscription.quality = quality.join(',');
-            subscription.fansub = fansub.join(',');
+            subscription.qualities = quality.join(',');
+            subscription.fansub_groups = fansub.join(',');
             subscription.email=$("#email-box").val();
-            subscription.animename=animename;
+            subscription.anime_key=animename;
             var myJsonText=JSON.stringify(subscription);
         });
 
         $(".select-block").change(function(){
              var epno = $(this).val();
              var anid = $(this).closest('.sub-wrapper').attr("id");
-             $("#"+anid).find('.table-data').remove();
-             var html='<div class="table-data"><table class="anime-data"></table</div>';
-             $(html).appendTo($("#"+anid).find('.data-container'));
-               html="";
-             $.get(
-                "/search/get-torrent-list/", 
-                 {id:anid,episode:epno},
-                  function(response) {
-                for (var i = 0 ; i<response.length; i++) {
-               html += '<tr>'+
-                        '<td class="fansub">';
-                        if(response[i-1]){
-                        if(response[i-1]['fansub']!=response[i]['fansub'])
-                        html+=response[i]['fansub'];
-                        }
-                        else{
-                            html+=response[i]['fansub'];
-                        }
-                        html+='</td>'+
-                        '<td class="quality">';
-                        html+=response[i]['quality'];
-                        html+='</td>'+
-                        '<td class="file-size">';
-                        html+=response[i]['file_size'];
-                        html+='</td>'+
-                        '<td class="seed">';
-                        html+=response[i]['seeders'];
-                        html+='</td>'+
-                        '<td class="leach">';
-                        html+=response[i]['leechers'];
-                        html+='</td>'+
-                        '<td class="magnet"><a href="test" class="btn btn-block magtor">';
-                       // html+=response[i]['fansub'];
-                        html+='Magnet</a></td>'+
-                        '<td class="torrent"><a href="test" class="btn btn-block magtor">';
-                        //html+=response[i]['torrent_link'];
-                        html+="Torrent</a></td>"+
-                        "</tr>";
-                        } 
-                        $(html).appendTo($("#"+anid).find('.anime-data'));
-                        bindScrollBar2();
-                        },
-                "json"
-                );
-                
+             populate(epno,anid);
+        });
+
+        $(".fui-arrow-right").click(function(){
+            var epno = parseInt($(this).closest('.nav-bar').find(".select-block").val(),10);
+            var anid = $(this).closest('.sub-wrapper').attr("id");
+            var maxep=$(this).closest('.nav-bar').find(".select-block option:last").val();
+            if(epno<maxep)
+            {
+                epno+=1;
+                $(this).closest('.nav-bar').find(".select-block").selectpicker('val',epno);
+            }
+        });
+
+        $(".fui-arrow-left").click(function(){
+            var epno = parseInt($(this).closest('.nav-bar').find(".select-block").val(),10);
+            var anid = $(this).closest('.sub-wrapper').attr("id");
+            if(epno>1)
+            {
+                epno-=1;
+                $(this).closest('.nav-bar').find(".select-block").selectpicker('val',epno);
+            }
         });
 });
 
