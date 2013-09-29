@@ -8,9 +8,11 @@ function bindScrollBar() {
     $(".dropdown-inverse").mCustomScrollbar({
         theme:"light-thick",
     });
+        
 }
 
 function bindScrollBar2() {
+    $(".table-data").mCustomScrollbar("destroy");
     $(".table-data").mCustomScrollbar({
     scrollButtons:{
             enable:true
@@ -18,6 +20,12 @@ function bindScrollBar2() {
         theme:"dark-thick",
     });
 }
+
+  (function($){
+        $(window).load(function(){
+            bindScrollBar();
+        });
+    })(jQuery);
 
 function populate(epno,anid){
       $("#"+anid).find('.table-data').remove();
@@ -65,11 +73,7 @@ function populate(epno,anid){
                 "json"
                 );
 }
-  (function($){
-        $(window).load(function(){
-            bindScrollBar();
-        });
-    })(jQuery);
+
 
 	var animename;
 
@@ -78,6 +82,8 @@ function populate(epno,anid){
 		$('.fancybox').fancybox();
 		var numfansub=0,fansubcnt=0,numquality=0;qualitycnt=0;
 		$('.subscribe').click(function() {
+            $("#alert-error-private").css("display","none");
+            $("#alert-message").empty();
 			animename = $(this).parents('div').eq(3).attr('id');
 			$(".checkbox-all-quality").addClass("checked");
             $(".checkbox-quality").addClass("checked");
@@ -196,10 +202,15 @@ function populate(epno,anid){
                 data: jsonText,
                 success: function(results) {
                     if (results['success'] == false) {
-                    	//subscription failed - error message in results['errors'].email
+                    	$("#alert-message").append("  bad");
+                        $("#alert-error-private").css("display","block");
                     }
                     else {
-                    	//subscription successful - proceed
+                    	$('<div class="alert alert-success" id="alert-success-private"> <button type="button" class="close"></button> <strong>Congrats!</strong> You have successfully subscribed to this anime.</div>').appendTo('#'+animename);
+                        $.fancybox.close();
+                        setTimeout(function() {
+                        $("#alert-success-private").fadeOut();
+                        }, 2000);
                     }
                 },
                 dataType: 'json'

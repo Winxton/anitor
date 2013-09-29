@@ -131,6 +131,7 @@ body{
 	box-shadow: none !important;
 	text-decoration:none !important;
 	margin-bottom: 0;
+
 }
 .nav-bar ul li.next{
 	/*margin-right: 14px !important;*/
@@ -155,6 +156,10 @@ body{
 .select-block{
 	display: none;
 }
+.dropdown-inverse li {
+	margin-left: 18px;
+	line-height: 17px;
+}
 
 .dropdown-inverse li.active > a, 
 .dropdown-inverse li.selected > a {
@@ -165,6 +170,7 @@ body{
 
 .mCSB_container{
 	margin-right: 0px;
+	top: 5px;
 }
 
 .dropdown-inverse li > a, 
@@ -185,7 +191,8 @@ body{
 	white-space: normal !important;
 	background-color: none;
 	min-width: 100px;
-	max-height: 165px !important;
+	max-height: 150px !important;
+	left : -10px;
 }
 
 .dropdown-arrow{
@@ -298,4 +305,8 @@ body{
 	padding:3px 0 0 0;
 	display:inline-block;
 	margin-bottom:0;
+}
+
+#alert-info-private{
+	display: none;
 }
