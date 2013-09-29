@@ -38,9 +38,13 @@
     <style id="search_style"></style>
 
   </head>
-  <body>
-    <input type="text" id="anime_search"/>
+  <header><div id = "centerhead"><h1>AniTor</h1></div></header>
+
+  <div id = "search_wrap">
+  <input type="text" id="anime_search"/>
+  </div>
   
+  <body> 
     {% for anime in animeList %}
     <div class="sub-wrapper" id="{{ anime.pk }}" anime-name = "{{ anime.official_title|lower }}">
         <div class="element-border">

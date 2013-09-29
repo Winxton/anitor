@@ -202,7 +202,6 @@ function populate(epno,anid){
                 data: jsonText,
                 success: function(results) {
                     if (results['success'] == false) {
-                    	$("#alert-message").append("  bad");
                         $("#alert-error-private").css("display","block");
                     }
                     else {

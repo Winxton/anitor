@@ -1,6 +1,41 @@
 body{
 	background-color : #ECF0F1;
-	margin-top:100px;
+}
+
+header {
+	background-color: #2c3e50;
+	height: 45px;
+	margin-bottom: 10px;
+}
+
+header #centerhead {
+	height: 100px;
+	width: 800px;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+header h1 {
+	color: #ecf0f1;
+	font-size: 40px;
+	font-family: "Segoe UI", Frutiger, "Frutiger Linotype", "Dejavu Sans", "Helvetica Neue", Arial, sans-serif;
+	margin-top: 0px;
+	margin-left: 10px;
+	margin-right: 20px;
+	float: left;
+}
+
+#search_wrap {
+	width: 795px;
+	margin-right: auto;
+	margin-left: auto;
+	margin-bottom: 10px;
+}
+
+#anime_search {
+	width: 800px;
+	margin-top: 2px;
+	margin : 0 auto;
 }
 
 .sub-wrapper{
