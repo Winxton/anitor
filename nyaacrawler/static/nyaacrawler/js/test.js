@@ -1,4 +1,3 @@
-
 function bindScrollBar() {
     $(".table-data").mCustomScrollbar({
     scrollButtons:{
@@ -78,7 +77,6 @@ function populate(epno,anid){
         $("select").selectpicker({style: 'btn-primary', menuStyle: 'dropdown-inverse'});
 		$('.fancybox').fancybox();
 		var numfansub=0,fansubcnt=0,numquality=0;qualitycnt=0;
-		
 		$('.subscribe').click(function() {
 			animename = $(this).parents('div').eq(3).attr('id');
 			$(".checkbox-all-quality").addClass("checked");
@@ -143,6 +141,7 @@ function populate(epno,anid){
 				}
 			});
 		});	
+			var success=true;
 		$(".checkbox-all-fansub").click(function() {
 			if($(".checkbox-all-fansub").hasClass("checked")){	
 				$(".checkbox-option-fansub").removeAttr("checked");
@@ -172,6 +171,41 @@ function populate(epno,anid){
 					qualitycnt=numquality;
 				}
 		});
+
+        $(".subscribe-final").click(function(){
+            var subscription= {};
+            var quality =[];
+            var fansub =[];
+            $(".checkbox-quality").each(function(){
+                if($(this).hasClass("checked"))
+                    quality.push($(this).attr("id"));
+            });
+            $(".checkbox-fansub").each(function(){
+                if($(this).hasClass("checked"))
+                    fansub.push($(this).text());
+            });
+            subscription.qualities = quality.join(',');
+            subscription.fansub_groups = fansub.join(',');
+            subscription.email=$("#email-box").val();
+            subscription.anime_key=animename;
+            var jsonText=JSON.stringify(subscription);
+
+            $.ajax ({
+				url: "/subscribe/",
+				type: 'POST',
+                data: jsonText,
+                success: function(results) {
+                    if (results['success'] == false) {
+                    	//subscription failed - error message in results['errors'].email
+                    }
+                    else {
+                    	//subscription successful - proceed
+                    }
+                },
+                dataType: 'json'
+            });
+
+        });
 
         $(".select-block").change(function(){
              var epno = $(this).val();
