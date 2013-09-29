@@ -1,6 +1,41 @@
 body{
 	background-color : #ECF0F1;
-	margin-top:100px;
+}
+
+header {
+	background-color: #2c3e50;
+	height: 45px;
+	margin-bottom: 10px;
+}
+
+header #centerhead {
+	height: 100px;
+	width: 800px;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+header h1 {
+	color: #FAFAFA;
+	font-size: 40px;
+	font-family: "Calisto MT", "Bookman Old Style", Bookman, "Goudy Old Style", Garamond, "Hoefler Text", "Bitstream Charter", Georgia, serif;
+	margin-top: 0px;
+	margin-left: 10px;
+	margin-right: 20px;
+	float: left;
+}
+
+#search_wrap {
+	width: 795px;
+	margin-right: auto;
+	margin-left: auto;
+	margin-bottom: 10px;
+}
+
+#anime_search {
+	width: 800px;
+	margin-top: 2px;
+	margin : 0 auto;
 }
 
 .sub-wrapper{
@@ -131,6 +166,7 @@ body{
 	box-shadow: none !important;
 	text-decoration:none !important;
 	margin-bottom: 0;
+
 }
 .nav-bar ul li.next{
 	/*margin-right: 14px !important;*/
@@ -155,6 +191,10 @@ body{
 .select-block{
 	display: none;
 }
+.dropdown-inverse li {
+	margin-left: 18px;
+	line-height: 17px;
+}
 
 .dropdown-inverse li.active > a, 
 .dropdown-inverse li.selected > a {
@@ -165,6 +205,7 @@ body{
 
 .mCSB_container{
 	margin-right: 0px;
+	top: 5px;
 }
 
 .dropdown-inverse li > a, 
@@ -185,7 +226,8 @@ body{
 	white-space: normal !important;
 	background-color: none;
 	min-width: 100px;
-	max-height: 165px !important;
+	max-height: 150px !important;
+	left : -10px;
 }
 
 .dropdown-arrow{
@@ -298,4 +340,8 @@ body{
 	padding:3px 0 0 0;
 	display:inline-block;
 	margin-bottom:0;
+}
+
+#alert-info-private{
+	display: none;
 }

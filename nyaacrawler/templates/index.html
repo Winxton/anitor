@@ -38,9 +38,13 @@
     <style id="search_style"></style>
 
   </head>
-  <body>
-    <input type="text" id="anime_search"/>
+  <header><div id = "centerhead"><h1>AniTor</h1></div></header>
+
+  <div id = "search_wrap">
+  <input type="text" id="anime_search"/>
+  </div>
   
+  <body> 
     {% for anime in animeList %}
     <div class="sub-wrapper" id="{{ anime.pk }}" anime-name = "{{ anime.official_title|lower }}">
         <div class="element-border">
@@ -83,8 +87,8 @@
                     <table class="anime-data">      
                         {% for torrent in anime.latest_episodes %}      
                         <tr>
-                        	{% ifchanged torrent.fansub %}
-							    <td class="fansub">{{ torrent.fansub }}</td>
+                            {% ifchanged torrent.fansub %}
+                                <td class="fansub">{{ torrent.fansub }}</td>
                             {% else %}
                                 <td class="fansub"></td>
                             {% endifchanged %}
@@ -148,7 +152,11 @@
         </div>
         <div class="alert alert-error" id="alert-error-private">
             <button type="button" class="close"></button>
-            <strong>Error! </strong>Please put in your correct email address
+            <strong>Error!</strong><text>  </text><text id="alert-message"></text>
+        </div>
+        <div class="alert alert-info" id="alert-info-private">
+            <button type="button" class="close"></button>
+            <strong>Please Wait. </strong>Your request is being processed...
         </div>
     </div> 
     </div>
@@ -158,7 +166,7 @@
     <script type="text/javascript" src="{% static 'nyaacrawler/js/bootstrap-select.js' %}"></script>
     <script type="text/javascript" src="{% static 'nyaacrawler/js/application.js' %}"></script>
     <script>
-    	  var searchStyle = document.getElementById('search_style');
+    var searchStyle = document.getElementById('search_style');
     document.getElementById('anime_search').addEventListener('input', function() {
       if (!this.value) {
         searchStyle.innerHTML = "";

@@ -5,7 +5,7 @@ when you run "manage.py test".
 
 from django.test import TestCase
 
-from nyaacrawler.models import Anime,Torrent, Subscription
+from nyaacrawler.models import *
 
 import json
 
@@ -23,10 +23,9 @@ class NyaaView(TestCase):
 
         subscription = {
             'email' : "bademail",
-            'key'   : 2,
+            'anime_key'   : 2,
             'qualities' : "720p,480p",
             'fansub_groups' : "somesubgroup",
-            'episode'   : 10
         }
         resp = self.client.post('/subscribe/', content_type='application/json', data=json.dumps(subscription))
         
@@ -34,13 +33,11 @@ class NyaaView(TestCase):
         self.assertEqual (json.loads(resp.content)['success'], False)
 
     def testSubscribeSuccess(self):
-
         subscription = {
-            'email' : "test@example.com",
-            'key'   : 2,
+            'email' : "winxton@gmail.com",
+            'anime_key'   : 2,
             'qualities' : "720p,480p",
             'fansub_groups' : "somesubgroup",
-            'episode'   : 10
         }
         resp = self.client.post('/subscribe/', content_type='application/json', data=json.dumps(subscription))
         

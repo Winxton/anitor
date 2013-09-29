@@ -96,18 +96,13 @@ class TorrentAdmin(admin.ModelAdmin):
     list_display = ('title', 'episode','fansub', 'quality', 'infoHash')
     search_fields = ('torrent_name', 'fansub', 'quality')
 
-class UserAdmin(admin.ModelAdmin):
-    list_display = ('email','created')
-
 class SubscriptionAdmin(admin.ModelAdmin):
-    list_display = ('user', 'anime')
+    list_display = ('email', 'anime')
 
 admin.site.register(models.Anime, AnimeAdmin)
 
 admin.site.register(models.AnimeAlias, AnimeAliasAdmin)
 
 admin.site.register(models.Torrent, TorrentAdmin)
-
-admin.site.register(models.User, UserAdmin)
 
 admin.site.register(models.Subscription, SubscriptionAdmin)

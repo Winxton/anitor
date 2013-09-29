@@ -37,7 +37,7 @@ class Anime(models.Model):
     def get_unknown_placeholder(cls):
         unknown_placeholder = cls.objects.get(official_title=Anime.UNKNOWN_ANIME)
         return unknown_placeholder
-        
+
     @classmethod
     def get_active_anime(cls):
         return Anime.objects.filter(anime_aliases__torrents__isnull=False).distinct()
@@ -89,41 +89,9 @@ class Torrent(models.Model):
             Q (fansubs__contains=(self.fansub)) | Q(fansubs='all'),
             Q (current_episode=self.episode-1)
         )
-
-
-class User(models.Model):
-    email = models.EmailField()
-    created = models.DateTimeField(auto_now_add=True)
-    
-    #used if first subscribed and not registered
-    subscription_activation_key = models.CharField(
-        max_length=32,
-        default=os.urandom(16).encode('hex')
-    )
-    
-    #used when user is registered
-    registration_activation_key = models.CharField(
-        max_length=32,
-        default=os.urandom(16).encode('hex')
-    )
-    #user has been validated
-    confirmed_subscription = models.BooleanField()
-    #user is registered
-    confirmed_registered = models.BooleanField()
-
-    def __unicode__(self):
-        return self.email
-    def set_activated(self):
-        self.confirmed_subscription = True
-    def set_registered(self):
-        self.confirmed_registered = True
-    def has_no_subscriptions(self):
-        return self.get_num_subscriptions() == 0
-    def get_num_subscriptions(self):
-        return self.subscriptions.count()
-
+        
 class Subscription(models.Model):
-    user = models.ForeignKey(User, related_name="subscriptions")
+    email = models.EmailField()
     anime = models.ForeignKey(Anime, related_name="subscriptions")
     current_episode = models.FloatField()
     qualities = models.CharField(max_length=30)
@@ -132,17 +100,20 @@ class Subscription(models.Model):
         max_length=32,
         default=os.urandom(16).encode('hex')
     )
-
+    
     def __unicode__(self):
-        return self.user.email+" - "+self.anime.official_title
+        return self.email+" - "+self.anime.official_title
+    @classmethod
+    def get_subscriptions_for_email(cls, email):
+        return Subscription.objects.filter(email=email)
     def get_email(self):
-        return self.user.email
+        return self.email
     def increment_episode(self):
         self.current_episode += 1
-    def __unicode__(self):
-        return self.user.email+" - "+self.anime.official_title
+    def get_unsubscribe_key(self):
+        return self.unsubscribe_key
 
-class UserForm(ModelForm):
+class SubscriptionForm(ModelForm):
     class Meta:
-        model = User
-        fields = ['email']
+        model = Subscription
+        fields = ['email','anime','current_episode','qualities','fansubs']

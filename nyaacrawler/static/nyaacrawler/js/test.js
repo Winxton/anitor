@@ -1,4 +1,3 @@
-
 function bindScrollBar() {
     $(".table-data").mCustomScrollbar({
     scrollButtons:{
@@ -9,9 +8,11 @@ function bindScrollBar() {
     $(".dropdown-inverse").mCustomScrollbar({
         theme:"light-thick",
     });
+        
 }
 
 function bindScrollBar2() {
+    $(".table-data").mCustomScrollbar("destroy");
     $(".table-data").mCustomScrollbar({
     scrollButtons:{
             enable:true
@@ -19,6 +20,12 @@ function bindScrollBar2() {
         theme:"dark-thick",
     });
 }
+
+  (function($){
+        $(window).load(function(){
+            bindScrollBar();
+        });
+    })(jQuery);
 
 function populate(epno,anid){
       $("#"+anid).find('.table-data').remove();
@@ -52,11 +59,9 @@ function populate(epno,anid){
                         '<td class="leach">';
                         html+=response[i]['leechers'];
                         html+='</td>'+
-                        '<td class="magnet"><a href="test" class="btn btn-block magtor">';
-                       // html+=response[i]['fansub'];
+                        '<td class="magnet"><a href="'+ response[i]['magnet_link']+'" class="btn btn-block magtor">';
                         html+='Magnet</a></td>'+
-                        '<td class="torrent"><a href="test" class="btn btn-block magtor">';
-                        //html+=response[i]['torrent_link'];
+                        '<td class="torrent"><a href="'+ response[i]['torrent_link']+'" class="btn btn-block magtor">';
                         html+="Torrent</a></td>"+
                         "</tr>";
                         } 
@@ -65,12 +70,8 @@ function populate(epno,anid){
                         },
                 "json"
                 );
-}
-  (function($){
-        $(window).load(function(){
-            bindScrollBar();
-        });
-    })(jQuery);
+	}
+
 
 	var animename;
 
@@ -79,6 +80,8 @@ function populate(epno,anid){
 		$('.fancybox').fancybox();
 		var numfansub=0,fansubcnt=0,numquality=0;qualitycnt=0;
 		$('.subscribe').click(function() {
+            $("#alert-error-private").css("display","none");
+            $("#alert-message").empty();
 			animename = $(this).parents('div').eq(3).attr('id');
 			$(".checkbox-all-quality").addClass("checked");
             $(".checkbox-quality").addClass("checked");
@@ -189,7 +192,27 @@ function populate(epno,anid){
             subscription.fansub_groups = fansub.join(',');
             subscription.email=$("#email-box").val();
             subscription.anime_key=animename;
-            var myJsonText=JSON.stringify(subscription);
+            var jsonText=JSON.stringify(subscription);
+
+            $.ajax ({
+				url: "/subscribe/",
+				type: 'POST',
+                data: jsonText,
+                success: function(results) {
+                    if (results['success'] == false) {
+                        $("#alert-error-private").css("display","block");
+                    }
+                    else {
+                    	$('<div class="alert alert-success" id="alert-success-private"> <button type="button" class="close"></button> <strong>Congrats!</strong> You have successfully subscribed to this anime.</div>').appendTo('#'+animename);
+                        $.fancybox.close();
+                        setTimeout(function() {
+                        $("#alert-success-private").fadeOut();
+                        }, 2000);
+                    }
+                },
+                dataType: 'json'
+            });
+
         });
 
         $(".select-block").change(function(){

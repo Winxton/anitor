@@ -12,6 +12,9 @@ def get_anime_search_info(anime_name):
 	data = {'q' : anime_name}
 	url = MAL_API_URL + SEARCH_CALL + "?" + urlencode(data)
 	content = urllib2.urlopen(url).read()
+	# MAL-API search gives different results depending on cases
+	if not json.loads(content) and not anime_name.islower():
+		content = get_anime_search_info(anime_name.lower())
 	return content
 
 def parse_image_url(url):
