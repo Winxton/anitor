@@ -35,13 +35,14 @@
 
     <!--Loading custom Javascript -->
     <script type="text/javascript" src="{% static 'nyaacrawler/js/test.js' %}"></script>
+    <style id="search_style"></style>
 
   </head>
   <body>
     <input type="text" id="anime_search"/>
   
     {% for anime in animeList %}
-    <div class="sub-wrapper" id="{{ anime.pk }}">
+    <div class="sub-wrapper" id="{{ anime.pk }}" anime-name = "{{ anime.official_title|lower }}">
         <div class="element-border">
             <div class="image">
                 <img src="{{ anime.image }}"/>
@@ -52,7 +53,7 @@
                 </div>
                 <div class="ep-navigation nav-bar">
                 <ul>
-                    <li class="previous"><a href="#fakelink" class="fui-arrow-left nav-arrow"></a></li>
+                    <li class="previous"><a href="" class="fui-arrow-left nav-arrow"></a></li>
                     <li class="ep-number">
                         <div class="dropdown-ep">
                             <select name="Episode" class="select-block">
@@ -63,7 +64,7 @@
                             </select>
                         </div>
                     </li>
-                    <li class="next"><a href="#fakelink" class="fui-arrow-right nav-arrow"></a></li>
+                    <li class="next"><a href="" class="fui-arrow-right nav-arrow"></a></li>
                 </ul>
                 <a href="#inline1" class="btn btn-block btn-primary subscribe fancybox">Subscribe</a>
                 </div>
@@ -82,11 +83,15 @@
                     <table class="anime-data">      
                         {% for torrent in anime.latest_episodes %}      
                         <tr>
-                            <td class="fansub">{{ torrent.fansub }}</td>
+                        	{% ifchanged torrent.fansub %}
+							    <td class="fansub">{{ torrent.fansub }}</td>
+                            {% else %}
+                                <td class="fansub"></td>
+                            {% endifchanged %}
                             <td class="quality">{{ torrent.quality }}</td>
                             <td class="file-size">{{ torrent.file_size }}</td>
                             <td class="seed">{{ torrent.seeders }}</td>
-                            <td class="leach">{{ torrent.leechers }}</td>                       
+                            <td class="leach">{{ torrent.leechers }}</td>              
                             <td class="magnet"><a href="{{ torrent|magnet_link }}" class="btn btn-block magtor">Magnet</a></td>
                             <td class="torrent"><a href="{{ torrent.url }}" class="btn btn-block magtor">Torrent</a></td>
                         </tr>
@@ -113,24 +118,33 @@
         </div>
         <div id="quality-wrapper">
             <h4>Quality</h4>
-            <form>
+            <form class="quality-form">
                 <label class="checkbox checkbox-all-quality checked">
                     <input class="checkbox-option-all-quality" type="checkbox" checked="checked" data-toggle="checkbox">
                     Any
                 </label>
+                <label class="checkbox checkbox-quality checked" id="480p">
+                    <input class="checkbox-option-quality" type="checkbox" checked="checked" data-toggle="checkbox" >
+                    480p
+                </label>
+                <label class="checkbox checkbox-quality checked" id="720p">
+                    <input class="checkbox-option-quality" type="checkbox" checked="checked" data-toggle="checkbox" >
+                    720p
+                </label>
+                <label class="checkbox checkbox-quality checked" id="1080p">
+                    <input class="checkbox-option-quality" type="checkbox" checked="checked" data-toggle="checkbox" >
+                    1080p
+                </label>
                 <div id="quality-list">
                 </div>
             </form>
-        </div>
-        <br>
+        </div
+>        <br>
         <div id="email-wrapper">
             <form>
                 <h4><b>Email</b> : <input type="text" name="email" id="email-box"/>
                 <input type="submit" value="Subscribe" class="btn btn-block subscribe-final"/></h4>
             </form>
-        </div>
-        <div id="subscribe-wrapper">
-
         </div>
         <div class="alert alert-error" id="alert-error-private">
             <button type="button" class="close"></button>
@@ -140,125 +154,47 @@
     </div>
   </body>
 
-<div id = "arrival"></div>
-
-  <script>
-    function boldSelected(str, s, e) {
-    return str.substring(0, s) + "<b>" + str.substring(s,e) + "</b>" + str.substring(e);
-    }
-          $('#anime_search').keyup(function() {
-        searchTerm = this.value.toLowerCase();
-        
-        $.get(
-            "/search/get-anime-list/", 
-            {search:searchTerm},
-            function(response) {
-                $(".sub-wrapper").remove();
-                $.each
-                (
-                    response,
-                    function(ani_key, ani_value) {
-                        var startIdx = ani_value['title'].toLowerCase().indexOf(searchTerm);
-                        var endIdx = startIdx + searchTerm.length;
-                        //var html = "<br/>"+ani_key +" "+ boldSelected(ani_value['title'], startIdx, endIdx);
-                        
-                        var torrents = ani_value['torrents'];
-
-                        var html = "" + 
-                            "<div class='sub-wrapper' id='2'>" +
-                            "<div class='element-border'>" +
-                                "<div class='image'>" +
-                                    "<img src='" + ani_value['image'] + "'/>" +
-                                "</div>" +
-                                "<div class='data-container'>" +
-                                    "<div class='anime-title'>" +
-                                        boldSelected(ani_value['title'], startIdx, endIdx)+
-                                    "</div>" +
-                                    "<div class='ep-navigation nav-bar'>" +
-                                    "<ul>" +
-                                        "<li class='previous'><a href='#fakelink' class='fui-arrow-left nav-arrow'></a></li>" +
-                                        "<li class='ep-number'><div class='dropdown-ep'>"+
-                                            "<select name='Episode' class='select-block'>"+
-                                                "<option value='1'>Episode 20</option>"+
-                                                "<option value='2'>Episode 2</option>"+
-                                            "</select>"+
-                                            "<div class='btn-group select select-block'>"+
-                                                "<i class='dropdown-arrow dropdown-arrow-inverse'></i>"+
-                                                "<button class='btn dropdown-toggle clearfix btn-primary' data-toggle='dropdown'>"+
-                                                "<span class='filter-option pull-left'>Episode  20</span>"+
-                                                "&nbsp;"+
-                                                "<span class='caret'></span>"+
-                                                "</button>"+
-                                                "<ul class='dropdown-menu dropdown-inverse mCustomScrollbar _mCS_2' role='menu' + style='max-height: 552px; overflow-y:auto; min-height: 75px;overflow-x:hidden'>"+
-                                                "<div class='mCustomScrollBox mCS-light-thick' id='mCSB_2' style='position: relative; height: 100%; overflow: hidden; max-width: 100%; max-height: 205px;'>" +
-                                                "<div class='mCSB_container mCS_no_scrollbar' style='position: relative; top: 0px;'>"+
-                                                "<li rel='0' class='selected'><a tabindex='-1' href='#' class=''><span class='pull-left'>Episode  20</span></a></li>"+
-                                                "<li rel='1'><a tabindex='-1' href='#' class=''><span class='pull-left'>Episode 2</span></a></li></div><div class='mCSB_scrollTools' style='position: absolute; display: none;'>"+
-                                                "<div class='mCSB_draggerContainer'><div class='mCSB_dragger' style='position: absolute; top: 0px;' oncontextmenu='return false;'>"+
-                                                "<div class='mCSB_dragger_bar' style='position:relative;'></div></div><div class='mCSB_draggerRail'+></div></div></div></div></ul></div>"+
-                                            "</div>" + 
-                                        "</li>" +
-                                        "<li class='next'><a href='#fakelink' class='fui-arrow-right nav-arrow'></a></li>" +
-                                    "</ul>" +
-                                    "<a href='#inline1' class='btn btn-block btn-primary subscribe fancybox'>Subscribe</a>" +
-                                    "</div>" +
-                                    "<div class='table-header'>" +
-                                        "<table>" +
-                                            "<tr align=left>" +
-                                                "<th class='fansub-head'>Fansub Group</th>" +
-                                                "<th class='quality-head'>Quality</th>" +
-                                                "<th class='size-head'>Size</th>" +
-                                                "<th class='seed-head'>Seed</th>" +
-                                                "<th class='leach-head'>Leech</th>" +
-                                            "</tr>" +
-                                        "</table>" +
-                                    "</div>" +
-                                    "<div class='table-data'>"+
-                                    "<table class='anime-data'>";
-                                    var stringtest;
-                                    $.each(
-                                        torrents,
-                                        function(tor_key, tor_val) {
-                                            html+="<tr> " +
-                                                "<td class='fansub'>";
-                                                if(tor_val['fansub']!=stringtest)
-                                                    html+=(tor_val['fansub']);
-                                                html+= "</td>" +
-                                                "<td class='quality'>";
-                                                html+=(tor_val['quality']);
-                                                html+="</td>" +
-                                                "<td class='file-size'>";
-                                                html+=(tor_val['file_size']);
-                                                html+="</td>" +
-                                                "<td class='seed'>";
-                                                html+=(tor_val['seeders']);
-                                                html+="</td>" +
-                                                "<td class='leach'>";
-                                                html+=(tor_val['leechers'])
-                                                html+="</td>" +
-                                                "<td class='magnet'><a href='#fakelink' class='btn btn-block magtor'>Magnet</a></td>" +
-                                                "<td class='torrent'><a href='"+tor_val['torrent_link']+"' class='btn btn-block magtor'>Torrent</a></td>";
-                                            html += "</tr>" ;
-                                            stringtest=(tor_val['fansub']);
-                                        });
-
-                                    html+="</table>"+
-                                    "</div>" +
-                                "</div>" +
-                            "</div>" +
-                            "</div>";
-
-                            $("#arrival").append(html);
-                            bindScrollBar();
-                    }
-                );
-            },
-            "json"
-        );
-    }); 
-
-  </script>
-
     <script type="text/javascript" src="{% static 'nyaacrawler/js/bootstrap.min.js' %}"></script>
     <script type="text/javascript" src="{% static 'nyaacrawler/js/bootstrap-select.js' %}"></script>
     <script type="text/javascript" src="{% static 'nyaacrawler/js/application.js' %}"></script>
+    
+    <script>
+    var searchStyle = document.getElementById('search_style');
+    document.getElementById('anime_search').addEventListener('input', function() {
+      if (!this.value) {
+        searchStyle.innerHTML = "";
+        return;
+      }
+       searchStyle.innerHTML = ".sub-wrapper:not([anime-name*=\"" + this.value.toLowerCase() + "\"]) { display: none; }";
+    });
+
+     $(".subscribe-final").click(function(){
+            var subscription= {};
+            var quality =[];
+            var fansub =[];
+            $(".checkbox-quality").each(function(){
+                if($(this).hasClass("checked"))
+                    quality.push($(this).attr("id"));
+            });
+            $(".checkbox-fansub").each(function(){
+                if($(this).hasClass("checked"))
+                    fansub.push($(this).text());
+            });
+
+            subscription.qualities = quality.join(',');
+            subscription.fansub_groups = fansub.join(',');
+            subscription.email=$("#email-box").val();
+            subscription.anime_key=animename;
+
+            var jsonText=JSON.stringify(subscription);
+            $.get {
+                "/subscribe/",
+                jsonText,
+                function(response) {
+                    alert("YES");
+                },
+                'json'
+            }
+            
+        });
+    </script>

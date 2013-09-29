@@ -11,9 +11,64 @@ function bindScrollBar() {
     });
 }
 
+function bindScrollBar2() {
+    $(".table-data").mCustomScrollbar({
+    scrollButtons:{
+            enable:true
+        },
+        theme:"dark-thick",
+    });
+}
+
+function populate(epno,anid){
+      $("#"+anid).find('.table-data').remove();
+             var html='<div class="table-data"><table class="anime-data"></table</div>';
+             $(html).appendTo($("#"+anid).find('.data-container'));
+               html="";
+             $.get(
+                "/search/get-torrent-list/", 
+                 {id:anid,episode:epno},
+                  function(response) {
+                for (var i = 0 ; i<response.length; i++) {
+               html += '<tr>'+
+                        '<td class="fansub">';
+                        if(response[i-1]){
+                        if(response[i-1]['fansub']!=response[i]['fansub'])
+                        html+=response[i]['fansub'];
+                        }
+                        else{
+                            html+=response[i]['fansub'];
+                        }
+                        html+='</td>'+
+                        '<td class="quality">';
+                        html+=response[i]['quality'];
+                        html+='</td>'+
+                        '<td class="file-size">';
+                        html+=response[i]['file_size'];
+                        html+='</td>'+
+                        '<td class="seed">';
+                        html+=response[i]['seeders'];
+                        html+='</td>'+
+                        '<td class="leach">';
+                        html+=response[i]['leechers'];
+                        html+='</td>'+
+                        '<td class="magnet"><a href="test" class="btn btn-block magtor">';
+                       // html+=response[i]['fansub'];
+                        html+='Magnet</a></td>'+
+                        '<td class="torrent"><a href="test" class="btn btn-block magtor">';
+                        //html+=response[i]['torrent_link'];
+                        html+="Torrent</a></td>"+
+                        "</tr>";
+                        } 
+                        $(html).appendTo($("#"+anid).find('.anime-data'));
+                        bindScrollBar2();
+                        },
+                "json"
+                );
+}
   (function($){
         $(window).load(function(){
-            //bindScrollBar();
+            bindScrollBar();
         });
     })(jQuery);
 
@@ -23,9 +78,11 @@ function bindScrollBar() {
         $("select").selectpicker({style: 'btn-primary', menuStyle: 'dropdown-inverse'});
 		$('.fancybox').fancybox();
 		var numfansub=0,fansubcnt=0,numquality=0;qualitycnt=0;
+		
 		$('.subscribe').click(function() {
 			animename = $(this).parents('div').eq(3).attr('id');
 			$(".checkbox-all-quality").addClass("checked");
+            $(".checkbox-quality").addClass("checked");
 			$(".checkbox-all-fansub").addClass("checked");
 			$('#fansub-list').empty();
 			numfansub=0;
@@ -42,16 +99,18 @@ function bindScrollBar() {
 			}
 			});	
 			fansubcnt=numfansub;
-			$('#quality-list').empty();
+			/*$('#quality-list').empty();
 			$("#"+animename+ " .quality").each(function(){
 			if($(this).text()){
+                if($(this).text() != "None"){
 				var label = $('<label class="checkbox checked checkbox-quality">').text($(this).text());
 				var input = $('<input class="checkbox-option-quality" type="checkbox" data-toggle="checkbox" checked=""><span class="icons"><span class="first-icon fui-checkbox-unchecked"></span><span class="second-icon fui-checkbox-checked"></span></span>').attr({});
 				input.appendTo(label);
 				$('#quality-list').append(label);
 				numquality+=1;
-			}
-			});
+			}}
+			});*/
+            numquality=3;
 			qualitycnt=numquality;
 			$(".checkbox-fansub").click(function(){
 				if($(this).hasClass("checked"))
@@ -84,18 +143,6 @@ function bindScrollBar() {
 				}
 			});
 		});	
-			var success=true;
-			$(".subscribe-final").click(function(){	
-				if(success==true){
-					$('<div class="alert alert-success" id="alert-success-private"> <button type="button" class="close"></button> <strong>Congrats!</strong> You have successfully subscribed to this anime.</div>').appendTo('#'+animename);
-					$.fancybox.close();
-					setTimeout(function() {
-					$("#alert-success-private").fadeOut();
-					}, 2000);
-				}
-				else
-				$("#alert-error-private").css("display","block");
-			});
 		$(".checkbox-all-fansub").click(function() {
 			if($(".checkbox-all-fansub").hasClass("checked")){	
 				$(".checkbox-option-fansub").removeAttr("checked");
@@ -125,4 +172,32 @@ function bindScrollBar() {
 					qualitycnt=numquality;
 				}
 		});
+
+        $(".select-block").change(function(){
+             var epno = $(this).val();
+             var anid = $(this).closest('.sub-wrapper').attr("id");
+             populate(epno,anid);
+        });
+
+        $(".fui-arrow-right").click(function(){
+            var epno = parseInt($(this).closest('.nav-bar').find(".select-block").val(),10);
+            var anid = $(this).closest('.sub-wrapper').attr("id");
+            var maxep=$(this).closest('.nav-bar').find(".select-block option:last").val();
+            if(epno<maxep)
+            {
+                epno+=1;
+                $(this).closest('.nav-bar').find(".select-block").selectpicker('val',epno);
+            }
+        });
+
+        $(".fui-arrow-left").click(function(){
+            var epno = parseInt($(this).closest('.nav-bar').find(".select-block").val(),10);
+            var anid = $(this).closest('.sub-wrapper').attr("id");
+            if(epno>1)
+            {
+                epno-=1;
+                $(this).closest('.nav-bar').find(".select-block").selectpicker('val',epno);
+            }
+        });
 });
+

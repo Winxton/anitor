@@ -2,7 +2,7 @@
 from django.shortcuts import render
 from django.views.decorators.http import require_http_methods
 from django.http import HttpResponse, HttpResponseRedirect
-
+from django.views.decorators.csrf import csrf_exempt
 from nyaacrawler.utils.emailSender import send_registration_confirmation_email
 from nyaacrawler.models import *
 
@@ -36,6 +36,8 @@ def get_torrents_for_anime_episode(request):
 
     return HttpResponse(json.dumps(response), content_type='application/json')
 
+@csrf_exempt
+@require_http_methods(["POST"])
 def subscribe(request):
     """
     Saves a subscription given the email and a
@@ -43,7 +45,8 @@ def subscribe(request):
     """
     results = {'success':False}
     subscription_request = json.loads(request.body)
-
+    print subscription_request
+    
     try:
         anime = Anime.objects.get(pk=subscription_request['anime_key'])
         subscription_data = {

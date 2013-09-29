@@ -14,4 +14,4 @@ def magnet_link(torrent):
 
 @register.filter
 def select_options_range(max_episode):
-  return range( max_episode )
+  return range( 1, max_episode )

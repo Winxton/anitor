@@ -4,3 +4,5 @@ settings.py
 *.pyc
 *.log
 *.swp
+*.ini
+database.db
