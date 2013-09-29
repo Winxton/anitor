@@ -5,3 +5,4 @@ settings.py
 *.log
 *.swp
 *.ini
+database.db

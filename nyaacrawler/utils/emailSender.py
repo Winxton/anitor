@@ -15,8 +15,8 @@ def send_registration_confirmation_email(registration_parameters):
 
     body += "To unsubscribe from the series: \"" + registration_parameters['anime'] + "\", visit the following URL:\n"
     body += settings.SITE_URL + "/unsubscribe/" + registration_parameters['unsubscribe_key']  + "/"
-    
-    send_mail(subject,body,settings.DEFAULT_FROM_EMAIL, [registration_parameters['email']])
+
+    send_mail(subject,body, 'Anitor Notifier ' + '<'+settings.DEFAULT_FROM_EMAIL+'>', [registration_parameters['email']])
 
 def send_notification_email(subscription_parameters):
     subject = "Episode " + str(subscription_parameters['episode'])  + " for " + subscription_parameters['anime'] +" has Arrived."
