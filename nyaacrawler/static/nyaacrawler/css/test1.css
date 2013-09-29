@@ -16,9 +16,9 @@ header #centerhead {
 }
 
 header h1 {
-	color: #ecf0f1;
+	color: #FAFAFA;
 	font-size: 40px;
-	font-family: "Segoe UI", Frutiger, "Frutiger Linotype", "Dejavu Sans", "Helvetica Neue", Arial, sans-serif;
+	font-family: "Calisto MT", "Bookman Old Style", Bookman, "Goudy Old Style", Garamond, "Hoefler Text", "Bitstream Charter", Georgia, serif;
 	margin-top: 0px;
 	margin-left: 10px;
 	margin-right: 20px;

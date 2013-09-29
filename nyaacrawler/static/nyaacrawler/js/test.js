@@ -59,11 +59,9 @@ function populate(epno,anid){
                         '<td class="leach">';
                         html+=response[i]['leechers'];
                         html+='</td>'+
-                        '<td class="magnet"><a href="test" class="btn btn-block magtor">';
-                       // html+=response[i]['fansub'];
+                        '<td class="magnet"><a href="'+ response[i]['magnet_link']+'" class="btn btn-block magtor">';
                         html+='Magnet</a></td>'+
-                        '<td class="torrent"><a href="test" class="btn btn-block magtor">';
-                        //html+=response[i]['torrent_link'];
+                        '<td class="torrent"><a href="'+ response[i]['torrent_link']+'" class="btn btn-block magtor">';
                         html+="Torrent</a></td>"+
                         "</tr>";
                         } 
@@ -72,7 +70,7 @@ function populate(epno,anid){
                         },
                 "json"
                 );
-}
+	}
 
 
 	var animename;

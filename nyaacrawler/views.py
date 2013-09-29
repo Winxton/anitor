@@ -5,6 +5,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.views.decorators.csrf import csrf_exempt
 from nyaacrawler.utils.emailSender import send_registration_confirmation_email
 from nyaacrawler.models import *
+from urllib import urlencode
 
 import json
 
@@ -23,12 +24,21 @@ def get_torrents_for_anime_episode(request):
         title__anime__pk=anime_id
     ).order_by('fansub')
     
+    anime_title = Anime.objects.get(pk=anime_id).official_title;
+
     response = []
     for torrent in torrent_list:
         torrentObj = {}
         torrentObj['fansub'] = torrent.fansub
         torrentObj['quality'] = torrent.quality
         torrentObj['torrent_link'] = torrent.url
+        
+        params = {
+            'dn'    :   anime_title,
+            'xt'    :   'urn:btih:%s' % torrent.infoHash,
+        }
+
+        torrentObj['magnet_link'] = "magnet:?" + urlencode(params);
         torrentObj['seeders'] = torrent.seeders
         torrentObj['leechers'] = torrent.leechers
         torrentObj['file_size'] = torrent.file_size
