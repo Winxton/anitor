@@ -224,12 +224,9 @@ def crawl_page(url, crawl_type, stop_at=None):
     num_rows = len(record_list)
 
     if crawl_type == INITIAL_CRAWL:
-        import threading
-        threads = [threading.Thread(target=parse_row, args=(title_regex, meta_regex, item)) for item in record_list]
-        for t in threads:
-            t.start()
-        for t in threads:
-            t.join()
+        
+        for item in record_list:
+            parse_row(title_regex, meta_regex, item)
 
     else: #INCREMENTAL_CRAWL
         print "starting incremental crawl..."

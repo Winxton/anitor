@@ -55,7 +55,6 @@ def subscribe(request):
     """
     results = {'success':False}
     subscription_request = json.loads(request.body)
-    print subscription_request
     
     try:
         anime = Anime.objects.get(pk=subscription_request['anime_key'])
