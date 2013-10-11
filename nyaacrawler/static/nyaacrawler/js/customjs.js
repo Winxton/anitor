@@ -30,9 +30,11 @@ function bindScrollBar2() {
 function populate(epno,anid){
             var html="";
 
+            var loaderImg = "<img src='/static/nyaacrawler/images/loader.gif'>";
+            ($("#"+anid).find('.anime-data')).html(loaderImg);
+
             setTimeout(
                 function() {
-
                     $.get(
                     "/search/get-torrent-list/", 
                     {id:anid,episode:epno},
