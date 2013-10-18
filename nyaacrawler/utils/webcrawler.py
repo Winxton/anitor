@@ -31,8 +31,9 @@ def torrent_arrived(torrent):
     matched_subscriptions = torrent.get_matching_subscriptions()
 
     for subscription in matched_subscriptions:
+        subscription_parameters = {}
         subscription_parameters['episode'] = torrent.episode
-        subscription_parameters['anime_name'] = torrent.title.anime.official_title
+        subscription_parameters['anime'] = torrent.title.anime.official_title
         subscription_parameters['email'] = subscription.get_email()
         subscription_parameters['unsubscribe_key'] = subscription.get_unsubscribe_key()
         subscription_parameters['torrent_url'] = torrent.url
@@ -196,7 +197,7 @@ def parse_row(title_regex, meta_regex, item):
                 
                 print ("torrent for " + str(torrentObj) + ": " + torrent_name +" added")
 
-                # torrent_arrived(torrentObj)
+                torrent_arrived(torrentObj)
         else:
            print "INFO: alias for unknown anime: ", anime_alias_obj.title, " skipped"
 

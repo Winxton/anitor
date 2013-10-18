@@ -28,4 +28,4 @@ def send_notification_email(subscription_parameters):
     body += "To unsubscribe from the series: \"" + subscription_parameters['anime']+ "\", visit the following URL:\n"
     body += settings.SITE_URL + "/unsubscribe/" + subscription_parameters['unsubscribe_key'] + "/"
 
-    send_mail(subject,body,settings.DEFAULT_FROM_EMAIL, [subscription_parameters['email']])
+    send_mail(subject,body, 'Aniitor Notifier' + '<'+settings.DEFAULT_FROM_EMAIL+'>', [subscription_parameters['email']])
