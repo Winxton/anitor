@@ -13,7 +13,19 @@ class Command(NoArgsCommand):
 
     def handle_noargs(self, **options):
         active_torrents = Torrent.objects.exclude(title__anime=Anime.objects.get(official_title=Anime.UNKNOWN_ANIME))
-        self.__update_seed_leech(active_torrents)
+        accumulator = []
+
+        print "updating torrents ..."
+
+        for torrent in active_torrents:
+            if (len(accumulator) < 50):
+                accumulator.append(torrent)
+            else:
+                self.__update_seed_leech(accumulator)
+                accumulator = []
+        self.__update_seed_leech(accumulator)
+
+        print len(active_torrents), " updated"
 
     def __update_seed_leech(self, active_torrents):
         #Create the socket
@@ -46,5 +58,4 @@ class Command(NoArgsCommand):
             torrent.leechers = leechers
             torrent.save()
 
-            index = index + 12 
-        print len(active_torrents), "torrents updated"
+            index = index + 12
