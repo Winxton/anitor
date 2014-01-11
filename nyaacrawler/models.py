@@ -87,7 +87,7 @@ class Torrent(models.Model):
         return self.title.anime.subscriptions.filter(
             Q (qualities__contains=(self.quality)) | Q(qualities='all'),
             Q (fansubs__contains=(self.fansub)) | Q(fansubs='all'),
-            Q (current_episode=self.episode-1)
+            Q (current_episode=int(self.episode)-1)
         )
         
 class Subscription(models.Model):

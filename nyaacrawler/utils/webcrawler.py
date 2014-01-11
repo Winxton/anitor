@@ -264,9 +264,10 @@ def crawl_page(url, crawl_type, stop_at=None):
 
     return continue_crawl
     
-def crawl_season_list(season=""):
+def create_new_season_list(season=""):
     """
     Scrapes seasonal anime chart for new Anime
+    Deletes finished airing anime from previous season
     """
     CHART_BASE_URL = "http://anichart.net/"
     
@@ -284,8 +285,23 @@ def crawl_season_list(season=""):
     
     c=urllib2.urlopen(CHART_BASE_URL + season)
     soup=BeautifulSoup(c.read())
+
     anime_list = soup.find_all("div", "anime_info")
-    
+
+    # deletes finished anime from previous season 
+
+    previous_anime_list = [anime.official_title for anime in Anime.objects.all()]
+    current_anime_list = []
+    for anime in anime_list:
+        title = anime.find("div", "title").text.strip()
+        current_anime_list.append(title)
+
+    finished_anime_list = list( set(previous_anime_list) - set(current_anime_list))
+
+    for anime_title in finished_anime_list:
+        Anime.objects.get(official_title=anime_title).delete()  
+
+    # adds new anime from current season
     for anime in anime_list:
         title = anime.find("div", "title").text.strip()
         img_src = anime.find("img", "thumb").get("src")
@@ -307,4 +323,4 @@ def crawl_season_list(season=""):
         else:
             #The alias name does not exist - create an anime object and set its alias to the given title.
             anime_obj = Anime.objects.create(official_title=title, image=img_src)
-            AnimeAlias.objects.create(anime=anime_obj, title=title)
+            AnimeAlias.objects.create(anime=anime_obj, title=title, do_initialize=True)
