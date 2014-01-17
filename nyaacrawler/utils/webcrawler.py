@@ -298,6 +298,9 @@ def create_new_season_list(season=""):
         title = anime.find("div", "title").text.strip()
         current_anime_list.append(title)
 
+    # the 'unknown anime object' must always exist
+    current_anime_list.append(Anime.UNKNOWN_ANIME)
+
     finished_anime_list = list( set(previous_anime_list) - set(current_anime_list))
 
     for anime_title in finished_anime_list:
