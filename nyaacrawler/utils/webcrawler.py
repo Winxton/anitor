@@ -127,7 +127,7 @@ def crawl_specific_anime(anime_name):
             'page' : 'rss',
             'cats' : ENGLISH_TRANSLATED,
             'filter' : TRUSTED_ONLY,
-            'term' : anime_name,
+            'term' : anime_name.encode('utf8'),
             'offset' : offset
         }
 
@@ -170,6 +170,8 @@ def parse_row(title_regex, meta_regex, item):
             }
         )
         
+        print "OK"
+
         if (created):
             print "INFO: new alias name for unknown anime: ", anime_alias_obj.title, "has been added."
 

@@ -9,10 +9,13 @@ ADMINS = (
 
 MANAGERS = ADMINS
 
+import os
+PROJECT_DIR = os.path.abspath(os.path.dirname(__file__))
+
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
-        'NAME': 'anitor',                      # Or path to database file if using sqlite3.
+        'ENGINE': 'django.db.backends.sqlite3', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
+        'NAME': os.path.join(PROJECT_DIR, 'anitor.sqlite3'),                      # Or path to database file if using sqlite3.
         # The following settings are not used with sqlite3:
         'USER': '',
         'PASSWORD': '',
@@ -20,8 +23,6 @@ DATABASES = {
         'PORT': '',                      # Set to empty string for default.
     }
 }
-
-import os
 
 RSS_FETCH_DATETIME_PATH=os.path.join(
      os.path.abspath(os.path.dirname(__file__)),
