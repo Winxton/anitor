@@ -31,10 +31,8 @@ function populate(epno,anid){
             var html="";
 
             var loaderImg = "<img src='/static/nyaacrawler/images/loader.gif'>";
-            ($("#"+anid).find('.anime-data')).html(loaderImg);
+            ($("#"+anid).find('.anime-data')).html("Loading ... ");
 
-            setTimeout(
-                function() {
                     $.get(
                     "/search/get-torrent-list/", 
                     {id:anid,episode:epno},
@@ -64,7 +62,7 @@ function populate(epno,anid){
                             html+='</td>'+
                             '<td class="magnet"><a href="'+ response[i]['magnet_link']+'" class="btn btn-block magtor">';
                             html+='Magnet</a></td>'+
-                            '<td class="torrent"><a href="'+ response[i]['torrent_link']+'" class="btn btn-block magtor">';
+                            '<td class="torrent"><a href="'+ response[i]['torrent_link']+'" class="btn btn-block magtor" target="_blank">';
                             html+="Torrent</a></td>"+
                             "</tr>";
                             } 
@@ -78,8 +76,6 @@ function populate(epno,anid){
                             },
                     "json"
                     );
-                }, 200
-            );
 	}
 
     function subscribeSuccess(results, textStatus, jqXHR) {

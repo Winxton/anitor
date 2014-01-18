@@ -51,6 +51,9 @@ class AnimeAliasAdmin(admin.ModelAdmin):
     ]
 
     list_filter = (IsKnownFilter,)
+
+    def initialize_selected(self,request,queryset):
+        queryset.update(do_initialize=True)
     
     def migrate_selected(self, request, queryset):
     # Action which changes the selected AnimeAlias' anime foreignkey.
@@ -89,8 +92,9 @@ class AnimeAliasAdmin(admin.ModelAdmin):
         return TemplateResponse(request, ["anime_alias_migration.html"],
             context, current_app=self.admin_site.name)
 
-    migrate_selected.short_description = "Migrate selected Anime Alias to another Anime"
-    actions = [migrate_selected]
+    initialize_selected.short_description = "Set selected Anime to be initialized."
+    migrate_selected.short_description = "Migrate selected Anime Alias to another Anime."
+    actions = [migrate_selected, initialize_selected]
 
 class TorrentAdmin(admin.ModelAdmin):
     list_display = ('title', 'episode','fansub', 'quality', 'infoHash')

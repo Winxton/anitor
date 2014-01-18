@@ -28,11 +28,12 @@ def torrent_arrived(torrent):
     """
     Gets all matching subscribers and send notification email
     """
-    matched_subscriptions = torrent.get_matching_subscriptions()
 
+    matched_subscriptions = torrent.get_matching_subscriptions()
+    
     for subscription in matched_subscriptions:
         subscription_parameters = {}
-        subscription_parameters['episode'] = torrent.episode
+        subscription_parameters['episode'] = str(torrent.episode)
         subscription_parameters['anime'] = torrent.title.anime.official_title
         subscription_parameters['email'] = subscription.get_email()
         subscription_parameters['unsubscribe_key'] = subscription.get_unsubscribe_key()
@@ -127,7 +128,7 @@ def crawl_specific_anime(anime_name):
             'page' : 'rss',
             'cats' : ENGLISH_TRANSLATED,
             'filter' : TRUSTED_ONLY,
-            'term' : anime_name.encode('utf8'),
+            'term' : anime_name.encode('utf-8'),
             'offset' : offset
         }
 
@@ -198,8 +199,8 @@ def parse_row(title_regex, meta_regex, item):
                 )
                 
                 print ("torrent for " + str(torrentObj) + ": " + torrent_name +" added")
-
                 torrent_arrived(torrentObj)
+
         else:
            print "INFO: alias for unknown anime: ", anime_alias_obj.title, " skipped"
 

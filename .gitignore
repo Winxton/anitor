@@ -6,3 +6,4 @@ settings.py
 *.swp
 *.ini
 database.db
+anitor/logs/*

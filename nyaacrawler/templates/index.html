@@ -5,29 +5,31 @@
 <html lang="en">
   <head>
     <meta charset="utf-8">
-    <title>Anitor</title>
+    <title>Anitor: Anime torrents currently airing</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
+    <meta name="Description" content="Organized Anime torrents for currently airing anime series, aggregated from nyaa.se.">
     <!-- Loading Bootstrap -->
     <link href="{% static 'nyaacrawler/bootstrap/css/bootstrap.css' %}" rel="stylesheet">
 
-    <!-- Loading Flat UI -->
     <link href="{% static 'nyaacrawler/css/flat-ui.css' %}" rel="stylesheet">
+    <link href="{% static 'nyaacrawler/custom-scrollbar-plugin/jquery.mCustomScrollbar.css' %}" rel="stylesheet" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="{% static 'nyaacrawler/fancyBox/source/jquery.fancybox.css' %}" media="screen" />
+
+
+    <!-- Loading custom CSS -->
+    <link href="{% static 'nyaacrawler/css/customcss.css' %}" rel="stylesheet">
+
+    <!-- Loading Flat UI -->
     <link rel="shortcut icon" href="{% static 'nyaacrawler/images/favicon.ico' %}">
 
     <!--Loading jquery library -->
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
 
     <!-- Loading Scrollbar -->
-    <link href="{% static 'nyaacrawler/custom-scrollbar-plugin/jquery.mCustomScrollbar.css' %}" rel="stylesheet" type="text/css" />
     <script src="{% static 'nyaacrawler/custom-scrollbar-plugin/jquery.mCustomScrollbar.concat.min.js' %}"></script>
-
-    <!-- Loading custom CSS -->
-    <link href="{% static 'nyaacrawler/css/customcss.css' %}" rel="stylesheet">
 
     <!--Loading fancyBox -->
     <script type="text/javascript" src="{% static 'nyaacrawler/fancyBox/source/jquery.fancybox.js' %}"></script>
-    <link rel="stylesheet" type="text/css" href="{% static 'nyaacrawler/fancyBox/source/jquery.fancybox.css' %}" media="screen" />
 
     <!--Loading checkbox and radio Javascript -->
     <script src="{% static 'nyaacrawler/js/flatui-checkbox.js' %}"></script>
@@ -57,7 +59,7 @@
                 </div>
                 <div class="ep-navigation nav-bar">
                 <ul>
-                    <li class="previous"><a href="#" class="fui-arrow-left nav-arrow"></a></li>
+                    <li class="previous"><a class="fui-arrow-left nav-arrow"></a></li>
                     <li class="ep-number">
                         <div class="dropdown-ep">
                             <select name="Episode" class="select-block">
@@ -68,7 +70,7 @@
                             </select>
                         </div>
                     </li>
-                    <li class="next"><a href="#" class="fui-arrow-right nav-arrow"></a></li>
+                    <li class="next"><a class="fui-arrow-right nav-arrow"></a></li>
                 </ul>
                 <a href="#inline1" class="btn btn-block btn-primary subscribe fancybox">Subscribe</a>
                 </div>
@@ -97,7 +99,7 @@
                             <td class="seed">{{ torrent.seeders }}</td>
                             <td class="leach">{{ torrent.leechers }}</td>              
                             <td class="magnet"><a href="{{ torrent|magnet_link }}" class="btn btn-block magtor">Magnet</a></td>
-                            <td class="torrent"><a href="{{ torrent.url }}" class="btn btn-block magtor">Torrent</a></td>
+                            <td class="torrent"><a href="{{ torrent.url }}" class="btn btn-block magtor" target="_blank">Torrent</a></td>
                         </tr>
                         {% endfor %}
                     </table>

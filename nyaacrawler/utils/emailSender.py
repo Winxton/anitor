@@ -25,7 +25,8 @@ def send_notification_email(subscription_parameters):
     body += "To download the torrent for " + subscription_parameters['anime'] + " - episode " + str(subscription_parameters['episode']) + ", go to the link:\n "
     body += str(subscription_parameters['torrent_url']) + "\n\n"
     body += "You received this email because this series is in your tracking list. "
-    body += "To unsubscribe from the series: \"" + subscription_parameters['anime']+ "\", visit the following URL:\n"
-    body += settings.SITE_URL + "/unsubscribe/" + subscription_parameters['unsubscribe_key'] + "/"
-
+    body += "To unsubscribe from the series: \"" + str(subscription_parameters['anime']) + "\", visit the following URL:\n"
+    body += settings.SITE_URL + "/unsubscribe/" + str(subscription_parameters['unsubscribe_key']) + "/"
+    print "sending mail"
     send_mail(subject,body, 'Anitor Notifier' + '<'+settings.DEFAULT_FROM_EMAIL+'>', [subscription_parameters['email']])
+
