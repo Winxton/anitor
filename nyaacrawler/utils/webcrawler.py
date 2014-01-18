@@ -13,6 +13,7 @@ import urllib2
 import re
 import sys
 import time
+import os
 
 #url parameters - subject to change
 BASE_URL = 'http://www.nyaa.se/'
@@ -314,12 +315,26 @@ def create_new_season_list(season=""):
         if "../" in img_src:
             img_src = img_src.replace("../", CHART_BASE_URL)
 
+        filename = img_src.split("/")[-1]
+        outpath = os.path.join (settings.STATIC_ROOT + "/nyaacrawler/anime_images/",  filename)
+
+        if (not os.path.isfile(outpath)):
+            #arbitrary user agent
+            user_agent = "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:26.0) Gecko/20100101 Firefox/26.0"
+            header = { 'User-Agent' : user_agent }
+
+            req = urllib2.Request(img_src, None, header)
+            resp = urllib2.urlopen(req)
+            f = open(outpath,'w')
+            f.write( resp.read() )
+            print ("Wrote: " + outpath )
+
         if (AnimeAlias.objects.filter(title=title).exists()):
             existing_alias = AnimeAlias.objects.get(title=title)
             #the existing alias points to the 'UNKNOWN-ANIME'
             #create a new anime and link the existing alias to it
             if (existing_alias.anime.official_title == Anime.UNKNOWN_ANIME):
-                anime_obj = Anime.objects.create(official_title=title, image=img_src)
+                anime_obj = Anime.objects.create(official_title=title, image=filename)
                 existing_alias.anime = anime_obj
                 existing_alias.save()
                 print("Anime: " + title + " parent modified")
@@ -328,5 +343,6 @@ def create_new_season_list(season=""):
 
         else:
             #The alias name does not exist - create an anime object and set its alias to the given title.
-            anime_obj = Anime.objects.create(official_title=title, image=img_src)
+            anime_obj = Anime.objects.create(official_title=title, image=filename)
             AnimeAlias.objects.create(anime=anime_obj, title=title, do_initialize=True)
+            print ("Anime Added")

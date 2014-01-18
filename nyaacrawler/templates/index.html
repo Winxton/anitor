@@ -1,5 +1,6 @@
 {% load staticfiles %}
 {% load nyaacrawler_extras %}
+{% load compress %}
 
 <!DOCTYPE html>
 <html lang="en">
@@ -8,37 +9,43 @@
     <title>Anitor: Anime torrents currently airing</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="Description" content="Organized Anime torrents for currently airing anime series, aggregated from nyaa.se.">
-    <!-- Loading Bootstrap -->
+
     <link href="{% static 'nyaacrawler/bootstrap/css/bootstrap.css' %}" rel="stylesheet">
+    <!-- Load CSS -->
+    {% compress css %}
+        <!-- Loading Bootstrap -->
 
-    <link href="{% static 'nyaacrawler/css/flat-ui.css' %}" rel="stylesheet">
-    <link href="{% static 'nyaacrawler/custom-scrollbar-plugin/jquery.mCustomScrollbar.css' %}" rel="stylesheet" type="text/css" />
-    <link rel="stylesheet" type="text/css" href="{% static 'nyaacrawler/fancyBox/source/jquery.fancybox.css' %}" media="screen" />
+        <link href="{% static 'nyaacrawler/css/flat-ui.css' %}" rel="stylesheet">
+        <link href="{% static 'nyaacrawler/custom-scrollbar-plugin/jquery.mCustomScrollbar.css' %}" rel="stylesheet" type="text/css" />
+        <link rel="stylesheet" type="text/css" href="{% static 'nyaacrawler/fancyBox/source/jquery.fancybox.css' %}" media="screen" />
 
+        <!-- Loading custom CSS -->
+        <link href="{% static 'nyaacrawler/css/customcss.css' %}" rel="stylesheet">
+    {% endcompress %}
 
-    <!-- Loading custom CSS -->
-    <link href="{% static 'nyaacrawler/css/customcss.css' %}" rel="stylesheet">
+        <!-- Loading Flat UI -->
+        <link rel="shortcut icon" href="{% static 'nyaacrawler/images/favicon.ico' %}">
 
-    <!-- Loading Flat UI -->
-    <link rel="shortcut icon" href="{% static 'nyaacrawler/images/favicon.ico' %}">
+        <!--Loading jquery library -->
+        <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
 
-    <!--Loading jquery library -->
-    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+    <!-- Load js -->
+    {% compress js %}
+        <!-- Loading Scrollbar -->
+        <script src="{% static 'nyaacrawler/custom-scrollbar-plugin/jquery.mCustomScrollbar.concat.min.js' %}"></script>
 
-    <!-- Loading Scrollbar -->
-    <script src="{% static 'nyaacrawler/custom-scrollbar-plugin/jquery.mCustomScrollbar.concat.min.js' %}"></script>
+        <!--Loading fancyBox -->
+        <script type="text/javascript" src="{% static 'nyaacrawler/fancyBox/source/jquery.fancybox.js' %}"></script>
 
-    <!--Loading fancyBox -->
-    <script type="text/javascript" src="{% static 'nyaacrawler/fancyBox/source/jquery.fancybox.js' %}"></script>
+        <!--Loading checkbox and radio Javascript -->
+        <script src="{% static 'nyaacrawler/js/flatui-checkbox.js' %}"></script>
+        <script src="{% static 'nyaacrawler/js/flatui-radio.js' %}"></script>
 
-    <!--Loading checkbox and radio Javascript -->
-    <script src="{% static 'nyaacrawler/js/flatui-checkbox.js' %}"></script>
-    <script src="{% static 'nyaacrawler/js/flatui-radio.js' %}"></script>
+        <!--Loading custom Javascript -->
+        <script type="text/javascript" src="{% static 'nyaacrawler/js/customjs.js' %}"></script>
+    {% endcompress %}
 
-    <!--Loading custom Javascript -->
-    <script type="text/javascript" src="{% static 'nyaacrawler/js/customjs.js' %}"></script>
-    <style id="search_style"></style>
-
+        <style id="search_style"></style>
   </head>
   <header><div id = "centerhead"><h1>AniTor</h1></div></header>
 
@@ -51,7 +58,7 @@
     <div class="sub-wrapper" id="{{ anime.pk }}" anime-name = "{{ anime.official_title|lower }}">
         <div class="element-border">
             <div class="image">
-                <img src="{{ anime.image }}"/>
+                <img src="{% static 'nyaacrawler/anime_images/'|add:anime.image %}"/>
             </div><!--
             --><div class="data-container">
                 <div class="anime-title">
@@ -62,7 +69,7 @@
                     <li class="previous"><a class="fui-arrow-left nav-arrow"></a></li>
                     <li class="ep-number">
                         <div class="dropdown-ep">
-                            <select name="Episode" class="select-block">
+                            <select name="Episode" class="select-block" max-episode="{{ anime.current_episode }}">
                                 {% for i in anime.current_episode|select_options_range %}
                                     <option value="{{ i }}">Episode {{ i }}</option>
                                 {% endfor %}
@@ -160,10 +167,30 @@
     </div>
   </body>
 
-    <script type="text/javascript" src="{% static 'nyaacrawler/js/bootstrap.min.js' %}"></script>
-    <script type="text/javascript" src="{% static 'nyaacrawler/js/bootstrap-select.js' %}"></script>
-    <script type="text/javascript" src="{% static 'nyaacrawler/js/application.js' %}"></script>
+    {% compress js %}
+        <script type="text/javascript" src="{% static 'nyaacrawler/js/bootstrap.min.js' %}"></script>
+        <script type="text/javascript" src="{% static 'nyaacrawler/js/bootstrap-select.js' %}"></script>
+        <script type="text/javascript" src="{% static 'nyaacrawler/js/application.js' %}"></script>
+    {% endcompress %}
+
+
+
     <script>
+
+    /*
+    // give classname to select
+    $('select').each(
+        function() {
+            var maxEpisode = $(this).attr("max-episode");
+
+            for (var ep_num = 1; ep_num < maxEpisode; ep_num++ ) {
+                $(this).append( '<option value=' + ep_num + '>' + "Episode "+ep_num + '</option>' );
+            }
+            $(this).append( '<option value=' + maxEpisode + ' selected>' + "Episode "+ep_num +'</option>' );
+        }
+    )
+    */
+
     var searchStyle = document.getElementById('search_style');
     document.getElementById('anime_search').addEventListener('input', function() {
       if (!this.value) {
