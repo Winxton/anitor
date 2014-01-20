@@ -3,6 +3,7 @@ from nyaacrawler.utils import emailSender
 from django.conf import settings
 
 from bs4 import BeautifulSoup
+from PIL import Image, ImageOps
 
 from hashlib import sha1
 import bencode
@@ -157,6 +158,9 @@ def parse_row(title_regex, meta_regex, item):
         animeName = res.group(2)
         episode = res.group(3)
         quality = format(res.group(4))
+        if quality is None:
+            quality = "720p"
+
         vidFormat = format(res.group(5))
         
         seeders = meta_res.group(1)
@@ -171,8 +175,6 @@ def parse_row(title_regex, meta_regex, item):
                 'anime' : Anime.get_unknown_placeholder()
             }
         )
-        
-        print "OK"
 
         if (created):
             print "INFO: new alias name for unknown anime: ", anime_alias_obj.title, "has been added."
@@ -316,18 +318,26 @@ def create_new_season_list(season=""):
             img_src = img_src.replace("../", CHART_BASE_URL)
 
         filename = img_src.split("/")[-1]
-        outpath = os.path.join (settings.STATIC_ROOT + "/nyaacrawler/anime_images/",  filename)
+        image_outpath = os.path.join (settings.STATIC_ROOT + "/nyaacrawler/anime_images/",  filename)
 
-        if (not os.path.isfile(outpath)):
-            #arbitrary user agent
+        if (not os.path.isfile(image_outpath)):
+            # arbitrary user agent
             user_agent = "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:26.0) Gecko/20100101 Firefox/26.0"
             header = { 'User-Agent' : user_agent }
 
+            # write images 
             req = urllib2.Request(img_src, None, header)
             resp = urllib2.urlopen(req)
-            f = open(outpath,'w')
+            f = open(image_outpath,'w')
             f.write( resp.read() )
-            print ("Wrote: " + outpath )
+            f.close()
+            
+            print ("Wrote: " + image_outpath )
+
+            # Resize images
+            image = Image.open( image_outpath )
+            imageresize = image.resize( (125,163), Image.ANTIALIAS)
+            imageresize.save(image_outpath, 'JPEG')
 
         if (AnimeAlias.objects.filter(title=title).exists()):
             existing_alias = AnimeAlias.objects.get(title=title)
@@ -345,4 +355,4 @@ def create_new_season_list(season=""):
             #The alias name does not exist - create an anime object and set its alias to the given title.
             anime_obj = Anime.objects.create(official_title=title, image=filename)
             AnimeAlias.objects.create(anime=anime_obj, title=title, do_initialize=True)
-            print ("Anime Added")
+            print ("Anime Added: " + title)

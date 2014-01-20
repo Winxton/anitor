@@ -6,21 +6,9 @@ Anime Torrent organizer and aggregator: http://www.anitor.net
 Gets seasonal anime list from [anichart](http://anichart.net) and categorizes torrents from [nyaa](http://nyaa.se).
 Subscribed users will receive email updates when a new episode is available.
 
-## Requirements
-
-* Python v.2.x
-
-* Django v.1.5 or v.1.6
-
-* BeautifulSoup 4
-http://www.crummy.com/software/BeautifulSoup/#Download
-
-* lxml
-http://www.crummy.com/software/BeautifulSoup/bs4/doc/#parser-installation
-
 ## Installation
 
-1. Install the requirements above. The requirements are in requirements.txt, which can be installed with pip: `pip install -r requirements.txt`
+1. Install the requirements in requirements.txt, which can be installed with pip: `pip install -r requirements.txt`
 2. Rename anitor/settings.py.sample and rename the file to settings.py. Sqlite3 is the default since it is easiest to configure, but mysql is used in production.
 3. Initialize the database: `./manage.py syncdb`
 4. Scrape current anime list: `./manage.py newseason`
