@@ -58,7 +58,7 @@
     <div class="sub-wrapper" id="{{ anime.pk }}" anime-name = "{{ anime.official_title|lower }}">
         <div class="element-border">
             <div class="image">
-                <img src="{% static 'nyaacrawler/anime_images/'|add:anime.image %}"/>
+                <img data-src="{% static 'nyaacrawler/anime_images/'|add:anime.image %}"/>
             </div><!--
             --><div class="data-container">
                 <div class="anime-title">
