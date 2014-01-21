@@ -6,4 +6,4 @@ settings.py
 *.swp
 *.ini
 database.db
-anitor/logs/*
+anitor/logs/rss_fetch_datetime

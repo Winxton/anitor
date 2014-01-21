@@ -39,7 +39,7 @@
     <div class="sub-wrapper" id="{{ anime.pk }}" anime-name = "{{ anime.official_title|lower }}">
         <div class="element-border">
             <div class="image">
-                <img data-src="{% static 'nyaacrawler/anime_images/'|add:anime.image %}"/>
+                <img src="{% static 'nyaacrawler/anime_images/'|add:anime.image %}"/>
             </div><!--
             --><div class="data-container">
                 <div class="anime-title">
@@ -51,7 +51,10 @@
                         <li class="previous"><a class="fui-arrow-left nav-arrow"></a></li>
                         <li class="ep-number">
                             <div class="dropdown-ep">
-                                <select name="Episode" class="select-block" populated="False" max-episode="{{ anime.current_episode }}">
+                                <select name="Episode" class="select-block" max-episode="{{ anime.current_episode }}">
+                                    {% for i in anime.current_episode|select_options_range %}
+                                        <option value="{{ i }}">Episode {{ i }}</option>
+                                    {% endfor %}
                                         <option value="{{ anime.current_episode }}" selected>Episode {{ anime.current_episode }}</option>
                                 </select>
                             </div>
