@@ -60,21 +60,7 @@
 
 function bindScrollBar() {
     $(".table-data").mCustomScrollbar({
-    scrollButtons:{
-            enable:true
-        },
-        theme:"dark-thick",
-    });
-    $(".dropdown-inverse").mCustomScrollbar({
-        theme:"light-thick",
-    });
-        
-}
-
-function bindScrollBar2() {
-    $(".table-data").mCustomScrollbar("destroy");
-    $(".table-data").mCustomScrollbar({
-    scrollButtons:{
+        scrollButtons:{
             enable:true
         },
         theme:"dark-thick",
@@ -83,14 +69,14 @@ function bindScrollBar2() {
 
 (function($){
     $(window).load(function(){
-        bindScrollBar();
-	$(".image img").unveil();
+        bindScrollBar(); //bind scrollbars
+        $(".image img").unveil();
     });
 })(jQuery);
 
 function populate(epno,anid){
             var html="";
-
+            
             var loaderImg = "<img src='/static/nyaacrawler/images/loader.gif'>";
             ($("#"+anid).find('.anime-data')).html("Loading ... ");
 
@@ -128,12 +114,10 @@ function populate(epno,anid){
                             "</tr>";
                             } 
 
-                            $("#"+anid).find('.table-data').remove();
-                            $('<div class="table-data"><table class="anime-data"></table</div>').appendTo($("#"+anid).find('.data-container'));
-
+                            $("#"+anid).find('.anime-data').remove();
+                            $("#"+anid).find('.mCSB_container').append( $('<table class="anime-data"></table>') );
                             $(html).appendTo($("#"+anid).find('.anime-data'));
-
-                            bindScrollBar2();
+                            
                             },
                     "json"
                     );
@@ -148,7 +132,7 @@ function populate(epno,anid){
             $.fancybox.close();
             setTimeout(function() {
             $("#alert-success-private").fadeOut();
-            }, 2500);
+            }, 3000);
         }
     }
 
@@ -162,6 +146,7 @@ function populate(epno,anid){
         $('.subscribe').click(function() {
             $("#alert-error-private").css("display","none");
             $("#alert-message").empty();
+
 			animename = $(this).parents('div').eq(3).attr('id');
 			$(".checkbox-all-quality").addClass("checked");
             $(".checkbox-quality").addClass("checked");
@@ -183,6 +168,7 @@ function populate(epno,anid){
 			fansubcnt=numfansub;
             numquality=3;
 			qualitycnt=numquality;
+
 			$(".checkbox-fansub").click(function(){
 				if($(this).hasClass("checked"))
 				fansubcnt-=1;
@@ -198,6 +184,7 @@ function populate(epno,anid){
 					$(".checkbox-all-fansub").removeClass("checked");
 				}
 			});
+
 			$(".checkbox-quality").click(function(){
 				if($(this).hasClass("checked"))
 					qualitycnt-=1;

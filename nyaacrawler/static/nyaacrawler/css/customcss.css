@@ -91,7 +91,7 @@ header h1 {
 }
 
 .table-data{
-	overflow:auto; 
+	overflow: hidden; 
 	height:100px;
 	font-size:14.994px;
 }
@@ -335,10 +335,11 @@ header h1 {
 
 #alert-success-private{
 	height:20px;
-	width:698px;
-	padding:3px 0 0 0;
+	width:825px;
+	padding: 3px 0 0 0;
 	display:inline-block;
-	margin-bottom:0;
+	margin-top:-12px;
+	position: absolute;
 }
 
 #alert-info-private{
