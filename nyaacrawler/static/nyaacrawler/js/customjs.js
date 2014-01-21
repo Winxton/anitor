@@ -67,16 +67,9 @@ function bindScrollBar() {
     });
 }
 
-(function($){
-    $(window).load(function(){
-        bindScrollBar(); //bind scrollbars
-        $(".image img").unveil();
-    });
-})(jQuery);
-
 function populate(epno,anid){
             var html="";
-            
+
             var loaderImg = "<img src='/static/nyaacrawler/images/loader.gif'>";
             ($("#"+anid).find('.anime-data')).html("Loading ... ");
 
@@ -123,26 +116,29 @@ function populate(epno,anid){
                     );
 	}
 
-    function subscribeSuccess(results, textStatus, jqXHR) {
-        if (results['success'] == false) {
-            $("#alert-error-private").css("display","block");
-        }
-        else {
-            $('<div class="alert alert-success" id="alert-success-private"> <button type="button" class="close"></button> <strong>Congrats!</strong> You have successfully subscribed to this anime.</div>').appendTo('#'+animename);
-            $.fancybox.close();
-            setTimeout(function() {
-            $("#alert-success-private").fadeOut();
-            }, 3000);
-        }
+function subscribeSuccess(results, textStatus, jqXHR) {
+    if (results['success'] == false) {
+        $("#alert-error-private").css("display","block");
     }
+    else {
+        $('<div class="alert alert-success" id="alert-success-private"> <button type="button" class="close"></button> <strong>Congrats!</strong> You have successfully subscribed to this anime.</div>').appendTo('#'+animename);
+        $.fancybox.close();
+        setTimeout(function() {
+        $("#alert-success-private").fadeOut();
+        }, 3000);
+    }
+}
 
-	$(document).ready(function(){
+$(document).ready(function(){
         
         $("select").selectpicker({style: 'btn-primary', menuStyle: 'dropdown-inverse'});
 		$('.fancybox').fancybox();
 
+        bindScrollBar(); //bind scrollbars
+        $(".image img").unveil();
+
 		var numfansub=0,fansubcnt=0,numquality=0;qualitycnt=0;
-		
+
         $('.subscribe').click(function() {
             $("#alert-error-private").css("display","none");
             $("#alert-message").empty();
@@ -259,7 +255,11 @@ function populate(epno,anid){
             });
 
         });
-
+/*
+        $(".select-block").on("click", function() {
+            alert("OK");
+        });
+*/
         $(".select-block").change(function(){
              var epno = $(this).val();
              var anid = $(this).closest('.sub-wrapper').attr("id");

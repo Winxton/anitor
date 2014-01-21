@@ -18,7 +18,7 @@
     <!-- Load CSS -->
     {% compress css %}
         <link href="{% static 'nyaacrawler/css/flat-ui.css' %}" rel="stylesheet">
-        <link href="{% static 'nyaacrawler/css/jquery.mCustomScrollbar.css' %}" rel="stylesheet" type="text/css" />
+        <link href="{% static 'nyaacrawler/scrollbar/jquery.mCustomScrollbar.css' %}" rel="stylesheet" type="text/css" />
         <link rel="stylesheet" type="text/css" href="{% static 'nyaacrawler/fancyBox/source/jquery.fancybox.css' %}" media="screen" />
 
         <!-- Loading custom CSS -->
@@ -51,10 +51,7 @@
                         <li class="previous"><a class="fui-arrow-left nav-arrow"></a></li>
                         <li class="ep-number">
                             <div class="dropdown-ep">
-                                <select name="Episode" class="select-block" max-episode="{{ anime.current_episode }}">
-                                    {% for i in anime.current_episode|select_options_range %}
-                                        <option value="{{ i }}">Episode {{ i }}</option>
-                                    {% endfor %}
+                                <select name="Episode" class="select-block" populated="False" max-episode="{{ anime.current_episode }}">
                                         <option value="{{ anime.current_episode }}" selected>Episode {{ anime.current_episode }}</option>
                                 </select>
                             </div>
@@ -158,7 +155,7 @@
     <!-- Load js -->
     {% compress js %}
         <!-- Loading Scrollbar -->
-        <script src="{% static 'nyaacrawler/js/jquery.mCustomScrollbar.min.js' %}"></script>
+        <script src="{% static 'nyaacrawler/scrollbar/jquery.mCustomScrollbar.min.js' %}"></script>
 
         <!--Loading fancyBox -->
         <script type="text/javascript" src="{% static 'nyaacrawler/js/jquery.fancybox.pack.js' %}"></script>
