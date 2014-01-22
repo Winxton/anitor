@@ -6,4 +6,6 @@ settings.py
 *.swp
 *.ini
 database.db
+nyaacrawler/static/nyaacrawler/anime_images/
+nyaacrawler/static/CACHE/
 anitor/logs/rss_fetch_datetime

@@ -7,7 +7,12 @@ from nyaacrawler.utils.emailSender import send_registration_confirmation_email
 from nyaacrawler.models import *
 from urllib import urlencode
 
+import sys
+
 import json
+
+import logging
+logger = logging.getLogger(__name__)
 
 def index(request):
     anime = Anime.get_active_anime()
@@ -84,27 +89,39 @@ def subscribe(request):
                     registration_parameters['email'] = subscription.email
                     registration_parameters['unsubscribe_key'] = subscription.unsubscribe_key
                     registration_parameters['anime'] = subscription.anime.official_title
-                    #send_registration_confirmation_email(registration_parameters)
+                    
+                    try:
+                        send_registration_confirmation_email(registration_parameters)
+                    except:
+                        pass
+
                     results['success'] = True
+                    logger.info ("Subscribed: " + subscription.email + " to " + subscription.anime.official_title)
             else:
                 if 'email' in subscription_form.errors:
-                    results['error_message'] = "Invalid email"
+                    results['error_message'] = "Invalid email."
+                elif 'fansubs' in subscription_form.errors:
+                    results['error_message'] = "You must select a fansub."
+                elif 'qualities' in subscription_form.errors:
+                    results['error_message'] = "You must select a quality."
 
-    except e:
-        print repr(e)
-        results['error_message'] = "Error!"
+    except:
+        logger.error ( str(sys.exc_info()) )
 
-    print "ERROR MESSAGE: " + results['error_message']
     json_result = json.dumps(results)
     return HttpResponse(json_result, content_type='application/json')
 
 def unsubscribe(request, unsubscribe_key):
     try:
         subscription = Subscription.objects.get(unsubscribe_key=unsubscribe_key)
+        
+        response = "unsubscribed from " + subscription.anime.official_title
+        logger.info ( subscription.email + " " + response )
+
         subscription.delete()
         
         #TODO: template for unsubscribe
-        return HttpResponse("Unsubscribed")
+        return HttpResponse( response )
 
     except Subscription.DoesNotExist:
         return HttpResponseRedirect('/')

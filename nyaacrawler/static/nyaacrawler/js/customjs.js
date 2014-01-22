@@ -58,6 +58,8 @@ function populate(epno,anid){
 	}
 
 function subscribeSuccess(results, textStatus, jqXHR) {
+    $("#alert-info-private").css("display","none");
+    
     if (results['success'] == false) {
         $("#alert-error-private").css("display","block");
         $("#error_message").text( results['error_message'] );
@@ -66,7 +68,7 @@ function subscribeSuccess(results, textStatus, jqXHR) {
         $('<div class="alert alert-success" id="alert-success-private"> <button type="button" class="close"></button> <strong>Congrats!</strong> You have successfully subscribed to this anime.</div>').appendTo('#'+animename);
         $.fancybox.close();
         setTimeout(function() {
-        $("#alert-success-private").fadeOut();
+            $("#alert-success-private").fadeOut();
         }, 3000);
     }
 }
@@ -190,6 +192,8 @@ $(document).ready(function()
         subscription.email=$("#email-box").val();
         subscription.anime_key=animename;
         var jsonText = JSON.stringify(subscription);
+
+        $("#alert-info-private").css("display","block");
 
         $.ajax ({
 			url: "/subscribe/",

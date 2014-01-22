@@ -16,6 +16,9 @@ import sys
 import time
 import os
 
+import logging
+logger = logging.getLogger(__name__)
+
 #url parameters - subject to change
 BASE_URL = 'http://www.nyaa.se/'
 ENGLISH_TRANSLATED = '1_37'
@@ -40,7 +43,12 @@ def torrent_arrived(torrent):
         subscription_parameters['email'] = subscription.get_email()
         subscription_parameters['unsubscribe_key'] = subscription.get_unsubscribe_key()
         subscription_parameters['torrent_url'] = torrent.url
-        emailSender.send_notification_email (subscription_parameters)
+
+        try:
+            emailSender.send_notification_email (subscription_parameters)
+        except:
+            logger.error ( str(sys.exc_info()) )
+
         subscription.increment_episode()
         subscription.save()
 
@@ -184,14 +192,14 @@ def parse_row(title_regex, meta_regex, item):
         )
 
         if (created):
-            print "INFO: new alias name for unknown anime: ", anime_alias_obj.title, "has been added."
+            logger.info("new alias name for unknown anime: " + anime_alias_obj.title + "has been added.")
 
         animeObj = anime_alias_obj.anime;
 
         if animeObj.official_title != Anime.UNKNOWN_ANIME:
 
             if (Torrent.objects.filter(url=url).exists()):
-                print ("INFO: torrent already exist: " + torrent_name)
+                logger.info ("  torrent already exist: " + torrent_name)
             else:
                 info_hash = get_torrent_info_hash(torrent_link)
                 torrentObj = Torrent.objects.create(
@@ -208,15 +216,15 @@ def parse_row(title_regex, meta_regex, item):
                         infoHash      =   info_hash
                 )
                 
-                print ("torrent for " + str(torrentObj) + ": " + torrent_name +" added")
+                logger.info ("torrent for " + str(torrentObj) + ": " + torrent_name +" added")
                 torrent_arrived(torrentObj)
 
         else:
-           print "INFO: alias for unknown anime: ", anime_alias_obj.title, " skipped"
+           logger.info ("   alias for unknown anime: " + anime_alias_obj.title + " skipped")
 
     except:
-        print('Error at: ' + item.get_text())
-        print('with error: ' + str(sys.exc_info()) + '\n')
+        logger.error('Error at: ' + item.get_text())
+        logger.error('with error: ' + str(sys.exc_info()) + '\n')
 
 def crawl_page(url, crawl_type, stop_at=None):
     """
@@ -225,7 +233,7 @@ def crawl_page(url, crawl_type, stop_at=None):
     """
     continue_crawl = True
     
-    print ("Scraping page... " + url)
+    logger.info ("Scraping page... " + url)
 
     title_regex = re.compile(get_title_regex_string())
     meta_regex = re.compile(get_meta_regex_string())
@@ -243,7 +251,7 @@ def crawl_page(url, crawl_type, stop_at=None):
             parse_row(title_regex, meta_regex, item)
 
     else: #INCREMENTAL_CRAWL
-        print "starting incremental crawl..."
+        logger.info ("starting incremental crawl ...")
         assert (stop_at is not None)
 
         #update the latest time crawled
@@ -268,12 +276,12 @@ def crawl_page(url, crawl_type, stop_at=None):
                 continue_crawl = False
                 break
 
-            print "parsing... "+ item.title.text
+            logger.info ("parsing... "+ item.title.text)
             parse_row(title_regex, meta_regex, item)
         
     continue_crawl = continue_crawl and num_rows == ROWS_PER_PAGE
 
-    print 'Crawl completed'
+    logger.info ('Crawl completed')
 
     return continue_crawl
     
@@ -339,7 +347,7 @@ def create_new_season_list(season=""):
             f.write( resp.read() )
             f.close()
             
-            print ("Wrote: " + image_outpath )
+            logger.info ("Wrote: " + image_outpath )
 
             # Resize images
             image = Image.open( image_outpath )
@@ -354,12 +362,12 @@ def create_new_season_list(season=""):
                 anime_obj = Anime.objects.create(official_title=title, image=filename)
                 existing_alias.anime = anime_obj
                 existing_alias.save()
-                print("Anime: " + title + " parent modified")
+                logger.info("Anime: " + title + " parent modified")
             else:
-                print("Anime: " + title + " already exist in database!")
+                logger.info("Anime: " + title + " already exist in database!")
 
         else:
             #The alias name does not exist - create an anime object and set its alias to the given title.
             anime_obj = Anime.objects.create(official_title=title, image=filename)
             AnimeAlias.objects.create(anime=anime_obj, title=title, do_initialize=True)
-            print ("Anime Added: " + title)
+            logger.info ("Anime Added: " + title)

@@ -5,6 +5,9 @@ import socket
 import struct   
 from random import randrange #to generate random transaction_id
 
+import logging
+logger = logging.getLogger(__name__)
+
 class Command(NoArgsCommand):
     TRACKER = 'open.nyaatorrents.info'
     PORT = 6544
@@ -15,7 +18,7 @@ class Command(NoArgsCommand):
         active_torrents = Torrent.objects.exclude(title__anime=Anime.objects.get(official_title=Anime.UNKNOWN_ANIME))
         accumulator = []
 
-        print "updating torrents ..."
+        logger.info ("Updating Torrents ... ")
 
         for torrent in active_torrents:
             if (len(accumulator) < 50):
@@ -26,7 +29,7 @@ class Command(NoArgsCommand):
 
         self.__update_seed_leech(accumulator)
 
-        print len(active_torrents), " updated"
+        logger.info ( len(active_torrents), " updated." )
 
     def __update_seed_leech(self, active_torrents):
         #Create the socket
@@ -59,7 +62,7 @@ class Command(NoArgsCommand):
             torrent.leechers = leechers
 
             if (seeders <= 5):
-                print "torrent: " + torrent.torrent_name + " deleted."
+                logger.info ("Torrent: " + torrent.torrent_name + " deleted.")
                 torrent.delete()
             else:
                 torrent.save()

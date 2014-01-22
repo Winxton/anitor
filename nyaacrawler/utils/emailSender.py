@@ -4,6 +4,9 @@ from django.conf import settings
 from nyaacrawler.models import Anime, Torrent, Subscription
 from anitor import settings
 
+import logging
+logger = logging.getLogger(__name__)
+
 def send_registration_confirmation_email(registration_parameters):
     subject = "Anitor Subscription: " + registration_parameters['anime']
     body = "Hello! You have subscribed to " + registration_parameters['anime'] + " on " + settings.SITE_URL + ". \n\n"
@@ -16,6 +19,7 @@ def send_registration_confirmation_email(registration_parameters):
     body += "To unsubscribe from the series: \"" + registration_parameters['anime'] + "\", visit the following URL:\n"
     body += settings.SITE_URL + "/unsubscribe/" + registration_parameters['unsubscribe_key']  + "/"
 
+    logger.info ("Sending notification email to: " + registration_parameters['email'] + " for " + registration_parameters['anime'] )
     send_mail(subject,body, 'Anitor Notifier ' + '<'+settings.DEFAULT_FROM_EMAIL+'>', [registration_parameters['email']])
 
 def send_notification_email(subscription_parameters):
@@ -27,6 +31,7 @@ def send_notification_email(subscription_parameters):
     body += "You received this email because this series is in your tracking list. "
     body += "To unsubscribe from the series: \"" + str(subscription_parameters['anime']) + "\", visit the following URL:\n"
     body += settings.SITE_URL + "/unsubscribe/" + str(subscription_parameters['unsubscribe_key']) + "/"
-    print "sending mail"
+
+    logger.info ("Sending notification email to: " + subscription_parameters['email'] + " for " + subscription_parameters['anime'] + " episode " + subscription_parameters['episode'])
     send_mail(subject,body, 'Anitor Notifier' + '<'+settings.DEFAULT_FROM_EMAIL+'>', [subscription_parameters['email']])
 
