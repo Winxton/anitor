@@ -58,33 +58,43 @@ def subscribe(request):
     
     try:
         anime = Anime.objects.get(pk=subscription_request['anime_key'])
-        subscription_data = {
-            'email' : subscription_request['email'],
-            'anime' : subscription_request['anime_key'],
-            'current_episode' : anime.current_episode(),
-            'qualities' : subscription_request['qualities'],
-            'fansubs' : subscription_request['fansub_groups'] 
-        }
 
-        subscription_form = SubscriptionForm(subscription_data)
-        
-        if (subscription_form.is_valid()):
-            subscription, created = Subscription.objects.get_or_create(**subscription_form.cleaned_data)
+        already_subscribed = Subscription.objects.filter(email=subscription_request['email'], anime=subscription_request['anime_key']).exists()
 
-            #send subscription confirmation email
-            if created:
-                registration_parameters = {}
-                registration_parameters['email'] = subscription.email
-                registration_parameters['unsubscribe_key'] = subscription.unsubscribe_key
-                registration_parameters['anime'] = subscription.anime.official_title
-                send_registration_confirmation_email(registration_parameters)
-                results['success'] = True
+        if already_subscribed:
+            results['error_message'] = "You have already subscribed to this anime."
+
         else:
-            results['errors'] = subscription_form.errors
+            subscription_data = {
+                'email' : subscription_request['email'],
+                'anime' : subscription_request['anime_key'],
+                'current_episode' : anime.current_episode(),
+                'qualities' : subscription_request['qualities'],
+                'fansubs' : subscription_request['fansub_groups'] 
+            }
 
-    except:
-        results['errors'] = "Invalid subscription parameters"
-    
+            subscription_form = SubscriptionForm(subscription_data)
+            
+            if (subscription_form.is_valid()):
+                subscription, created = Subscription.objects.get_or_create(**subscription_form.cleaned_data)
+
+                #send subscription confirmation email
+                if created:
+                    registration_parameters = {}
+                    registration_parameters['email'] = subscription.email
+                    registration_parameters['unsubscribe_key'] = subscription.unsubscribe_key
+                    registration_parameters['anime'] = subscription.anime.official_title
+                    #send_registration_confirmation_email(registration_parameters)
+                    results['success'] = True
+            else:
+                if 'email' in subscription_form.errors:
+                    results['error_message'] = "Invalid email"
+
+    except e:
+        print repr(e)
+        results['error_message'] = "Error!"
+
+    print "ERROR MESSAGE: " + results['error_message']
     json_result = json.dumps(results)
     return HttpResponse(json_result, content_type='application/json')
 

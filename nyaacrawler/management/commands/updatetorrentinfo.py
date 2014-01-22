@@ -23,6 +23,7 @@ class Command(NoArgsCommand):
             else:
                 self.__update_seed_leech(accumulator)
                 accumulator = []
+
         self.__update_seed_leech(accumulator)
 
         print len(active_torrents), " updated"
@@ -56,6 +57,11 @@ class Command(NoArgsCommand):
             seeders, completed, leechers = struct.unpack(">LLL", res[index:index+12])
             torrent.seeders = seeders
             torrent.leechers = leechers
-            torrent.save()
+
+            if (seeders <= 5):
+                print "torrent: " + torrent.torrent_name + " deleted."
+                torrent.delete()
+            else:
+                torrent.save()
 
             index = index + 12

@@ -139,15 +139,24 @@ def crawl_specific_anime(anime_name):
 
         offset += 1
 
+def filter_quality(quality):
+    if quality == "480p" or quality == "848x480":
+        return "480p"
+    elif quality == "480p" or quality == "1920x1080":
+        return "1080p"
+    else:
+        # quality is usually 720p if no quality is specified
+        return "720p"
+
 def parse_row(title_regex, meta_regex, item):
     try:
-        torrent_name = item.title.text
+        torrent_name = item.title.text.replace('_', ' ')
         url = item.guid.text
         torrent_link = item.link.text
         meta = item.description.text
         
         # extract data after some normalization
-        res = title_regex.match(torrent_name.replace('_', ' '))
+        res = title_regex.match(torrent_name)
         meta_res = meta_regex.match(meta)
 
         if not res or not meta_res:
@@ -157,9 +166,7 @@ def parse_row(title_regex, meta_regex, item):
         fansub = res.group(1)
         animeName = res.group(2)
         episode = res.group(3)
-        quality = format(res.group(4))
-        if quality is None:
-            quality = "720p"
+        quality = filter_quality( format(res.group(4)) )
 
         vidFormat = format(res.group(5))
         
