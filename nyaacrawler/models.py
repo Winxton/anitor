@@ -42,6 +42,21 @@ class Anime(models.Model):
     def get_active_anime(cls):
         return Anime.objects.filter(anime_aliases__torrents__isnull=False).distinct()
     
+    @classmethod
+    def get_active_anime_by_leechers(cls):
+        return Anime.objects.raw(
+                 "SELECT nyaacrawler_anime.*, sum(nyaacrawler_torrent.leechers) "
+                +"FROM nyaacrawler_anime "
+                +"INNER JOIN nyaacrawler_animealias "
+                +"ON nyaacrawler_anime.id = nyaacrawler_animealias.anime_id "
+                +"INNER JOIN nyaacrawler_torrent "
+                +"ON nyaacrawler_torrent.title_id = nyaacrawler_animealias.id "
+                +"GROUP by nyaacrawler_torrent.title_id "
+                +"HAVING sum(nyaacrawler_torrent.leechers) "
+                +"ORDER BY sum(nyaacrawler_torrent.leechers) DESC"
+            )
+
+
     def save(self, *args, **kwargs):
         from nyaacrawler.utils import MyAnimeList 
         if not self.image:

@@ -15,7 +15,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 def index(request):
-    anime = Anime.get_active_anime()
+    anime = Anime.get_active_anime_by_leechers()
     
     context = {'animeList': anime}
     return render(request, 'index.html', context)

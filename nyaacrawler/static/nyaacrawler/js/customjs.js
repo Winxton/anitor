@@ -193,6 +193,7 @@ $(document).ready(function()
         subscription.anime_key=animename;
         var jsonText = JSON.stringify(subscription);
 
+        $("#alert-error-private").css("display","none");
         $("#alert-info-private").css("display","block");
 
         $.ajax ({
@@ -205,13 +206,33 @@ $(document).ready(function()
 
     });
 
-    $(".select-block").change(function(){
+    $(".select-block").change( function(){
          var epno = $(this).val();
          var anid = $(this).closest('.sub-wrapper').attr("id");
          populate(epno,anid);
+
+         var max_episode = $(this).attr("max-episode");
+         var current_episode = $(this).find(":selected").val();
+         
+         var rightArrow = $(this).parent().parent().next().children(":first");
+         var leftArrow = $(this).parent().parent().prev().children(":first");
+
+         console.log(rightArrow.attr("class") + " " + leftArrow.attr("class"));
+
+         if (current_episode == max_episode) {
+            rightArrow.attr('style', 'background-color: #4E6174 !important');
+         } else {
+            rightArrow.attr('style', 'background-color: inherit !important');
+         }
+         
+        if (current_episode == 1) {
+            leftArrow.attr('style', 'background-color: #4E6174 !important');
+         } else {
+            leftArrow.attr('style', 'background-color: inherit !important');
+         }
     });
 
-    $(".fui-arrow-right").click(function(){
+    $(".fui-arrow-right").click( function(){
         var epno = parseInt($(this).closest('.nav-bar').find(".select-block").val(),10);
         var anid = $(this).closest('.sub-wrapper').attr("id");
         var maxep=$(this).closest('.nav-bar').find(".select-block option:last").val();
@@ -222,7 +243,7 @@ $(document).ready(function()
         }
     });
 
-    $(".fui-arrow-left").click(function(){
+    $(".fui-arrow-left").click( function(){
         var epno = parseInt($(this).closest('.nav-bar').find(".select-block").val(),10);
         var anid = $(this).closest('.sub-wrapper').attr("id");
         if(epno>1)

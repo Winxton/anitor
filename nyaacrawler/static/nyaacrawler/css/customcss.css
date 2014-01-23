@@ -1133,8 +1133,13 @@ header h1 {
 
 /* arrow props*/
 .nav-arrow{
-	text-decoration:none !important;
+	text-decoration: none;
 	line-height: 0;
+}
+
+/* starting right arrow */
+a.fui-arrow-right.nav-arrow {
+	background-color: #4E6174 !important;
 }
 
 .select-block{
