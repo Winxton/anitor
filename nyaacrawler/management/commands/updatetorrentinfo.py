@@ -29,7 +29,7 @@ class Command(NoArgsCommand):
 
         self.__update_seed_leech(accumulator)
 
-        logger.info ( len(active_torrents), " updated." )
+        logger.info ( len(active_torrents) + " updated." )
 
     def __update_seed_leech(self, active_torrents):
         #Create the socket

@@ -44,17 +44,24 @@ class Anime(models.Model):
     
     @classmethod
     def get_active_anime_by_leechers(cls):
-        return Anime.objects.raw(
-                 "SELECT nyaacrawler_anime.*, sum(nyaacrawler_torrent.leechers) "
-                +"FROM nyaacrawler_anime "
-                +"INNER JOIN nyaacrawler_animealias "
-                +"ON nyaacrawler_anime.id = nyaacrawler_animealias.anime_id "
-                +"INNER JOIN nyaacrawler_torrent "
-                +"ON nyaacrawler_torrent.title_id = nyaacrawler_animealias.id "
-                +"GROUP by nyaacrawler_torrent.title_id "
-                +"HAVING sum(nyaacrawler_torrent.leechers) "
-                +"ORDER BY sum(nyaacrawler_torrent.leechers) DESC"
+        result = Anime.objects.raw(
+             "SELECT nyaacrawler_anime.*, anime_seeders "
+            + "FROM nyaacrawler_anime "
+            + "INNER JOIN "
+                +"(SELECT animealiases.anime_id, sum(animealiases.alias_seeders) as anime_seeders "
+                    + "FROM"
+                        + "(SELECT nyaacrawler_animealias.*, sum(nyaacrawler_torrent.seeders) as alias_seeders "
+                        + "FROM nyaacrawler_animealias "
+                        + "INNER JOIN nyaacrawler_torrent "
+                        + "ON nyaacrawler_torrent.title_id = nyaacrawler_animealias.id "
+                        + "GROUP by nyaacrawler_torrent.title_id) animealiases "
+                + "GROUP BY animealiases.anime_id) combined_alias "
+            + "ON nyaacrawler_anime.id=combined_alias.anime_id "
+            + "WHERE anime_seeders>0 "
+            + "ORDER BY anime_seeders DESC "
             )
+        print result
+        return result
 
 
     def save(self, *args, **kwargs):
